@@ -1,0 +1,3429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Northward Supply Co. — Session Telemetry</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ============ tokens ============ */
+        :root {
+            --paper: #f2ecdf;
+            --paper2: #e9e1cd;
+            --ink: #191611;
+            --ink2: #6b6353;
+            --line: #d8cfb8;
+            --ver: #c23a17;
+            --ver2: #e8593a;
+            --amber: #c99326;
+            --cbg: #14110c;
+            --cline: #332e22;
+            --cink: #ece4d0;
+            --cmut: #9a917c;
+            --serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+            --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', monospace;
+            --ch: min(420px, 60vh)
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            margin: 0;
+            background: var(--paper);
+            color: var(--ink);
+            font: 14px/1.6 var(--mono);
+            padding-bottom: calc(var(--ch) + 28px);
+            position: relative
+        }
+
+        ::selection {
+            background: var(--ver);
+            color: var(--paper)
+        }
+
+        #console ::selection {
+            background: var(--amber);
+            color: #14110c
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--ver);
+            outline-offset: 2px
+        }
+
+        #console :focus-visible {
+            outline-color: var(--amber)
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")
+        }
+
+        a {
+            color: inherit
+        }
+
+        /* ============ demo site ============ */
+        .masthead {
+            border-top: 7px solid var(--ink)
+        }
+
+        .mast-bar {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 24px;
+            flex-wrap: wrap;
+            padding: 20px 34px;
+            max-width: 1240px;
+            margin: 0 auto
+        }
+
+        .brand {
+            font: 700 15px var(--mono);
+            letter-spacing: .26em
+        }
+
+        .mast-nav {
+            display: flex;
+            gap: 26px;
+            flex-wrap: wrap
+        }
+
+        .mast-nav a {
+            font: 600 11px var(--mono);
+            letter-spacing: .14em;
+            text-decoration: none;
+            padding: 2px 0;
+            border-bottom: 2px solid transparent
+        }
+
+        .mast-nav a:hover {
+            border-color: var(--ver)
+        }
+
+        .mast-meta {
+            border-top: 1px solid var(--ink);
+            border-bottom: 1px solid var(--ink);
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 7px 34px;
+            max-width: 1240px;
+            margin: 0 auto;
+            font: 10.5px var(--mono);
+            letter-spacing: .12em;
+            color: var(--ink2)
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+            gap: 64px;
+            align-items: end;
+            padding: 72px 34px 64px;
+            max-width: 1240px;
+            margin: 0 auto
+        }
+
+        .kicker {
+            font: 600 11px var(--mono);
+            letter-spacing: .22em;
+            color: var(--ver);
+            margin: 0 0 22px;
+            display: flex;
+            align-items: center;
+            gap: 14px
+        }
+
+        .kicker::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--line)
+        }
+
+        h1 {
+            font: 600 clamp(54px, 7.4vw, 106px)/0.98 var(--serif);
+            letter-spacing: -.022em;
+            margin: 0
+        }
+
+        .lede {
+            font: 400 19px/1.65 var(--serif);
+            max-width: 52ch;
+            margin: 26px 0 0;
+            color: #2a251c
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 14px;
+            margin-top: 34px;
+            flex-wrap: wrap
+        }
+
+        .btn {
+            display: inline-block;
+            font: 700 11.5px var(--mono);
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            padding: 15px 22px;
+            border: 1px solid var(--ink);
+            background: transparent;
+            color: var(--ink);
+            cursor: pointer;
+            text-decoration: none;
+            transition: background .12s, color .12s, border-color .12s
+        }
+
+        .btn:hover {
+            background: var(--ink);
+            color: var(--paper)
+        }
+
+        .btn:active {
+            transform: translate(1px, 1px)
+        }
+
+        .btn.pri {
+            background: var(--ink);
+            color: var(--paper)
+        }
+
+        .btn.pri:hover {
+            background: var(--ver);
+            border-color: var(--ver)
+        }
+
+        .btn.sm {
+            padding: 11px 16px;
+            font-size: 10.5px
+        }
+
+        .plate {
+            margin: 0
+        }
+
+        .plate .ph {
+            border: 1px solid var(--ink);
+            padding: 9px;
+            background: #faf6ec;
+            box-shadow: 12px 12px 0 var(--ink)
+        }
+
+        .plate img {
+            display: block;
+            width: 100%;
+            height: auto;
+            filter: grayscale(.15) contrast(1.05)
+        }
+
+        .plate figcaption {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            font: 10.5px var(--mono);
+            letter-spacing: .1em;
+            color: var(--ink2);
+            margin-top: 10px;
+            text-transform: uppercase
+        }
+
+        .ticker {
+            border-top: 1px solid var(--ink);
+            border-bottom: 1px solid var(--ink);
+            background: var(--paper2);
+            overflow: hidden
+        }
+
+        .ticker-in {
+            display: flex;
+            width: max-content;
+            animation: tick 46s linear infinite
+        }
+
+        .ticker-in>div {
+            display: flex;
+            flex: none
+        }
+
+        .ticker span {
+            font: 600 10.5px var(--mono);
+            letter-spacing: .2em;
+            padding: 11px 0;
+            white-space: nowrap
+        }
+
+        .ticker span::after {
+            content: "—";
+            margin: 0 28px;
+            color: var(--ver)
+        }
+
+        @keyframes tick {
+            to {
+                transform: translateX(-50%)
+            }
+        }
+
+        section.blk {
+            padding: 78px 34px;
+            max-width: 1240px;
+            margin: 0 auto;
+            scroll-margin-top: 20px
+        }
+
+        .shead {
+            display: flex;
+            align-items: baseline;
+            gap: 18px;
+            border-bottom: 2px solid var(--ink);
+            padding-bottom: 12px;
+            margin-bottom: 40px;
+            flex-wrap: wrap
+        }
+
+        .shead .idx {
+            font: 700 11px var(--mono);
+            letter-spacing: .2em;
+            color: var(--ver)
+        }
+
+        .shead h2 {
+            font: 600 clamp(30px, 3.4vw, 42px)/1 var(--serif);
+            margin: 0;
+            letter-spacing: -.015em
+        }
+
+        .shead .fill {
+            flex: 1
+        }
+
+        .shead .note {
+            font: 10.5px var(--mono);
+            letter-spacing: .12em;
+            color: var(--ink2)
+        }
+
+        .cat-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+            gap: 64px;
+            align-items: start
+        }
+
+        .feat h3 {
+            font: 600 34px/1.1 var(--serif);
+            margin: 26px 0 6px
+        }
+
+        .feat .fprice {
+            font: 700 15px var(--mono);
+            color: var(--ver);
+            letter-spacing: .06em;
+            margin: 0 0 14px
+        }
+
+        .feat p {
+            font: 400 16.5px/1.65 var(--serif);
+            margin: 0 0 22px;
+            color: #2a251c
+        }
+
+        .list {
+            border-top: 2px solid var(--ink)
+        }
+
+        .item {
+            border-bottom: 1px solid var(--ink)
+        }
+
+        .item-row {
+            display: grid;
+            grid-template-columns: 40px minmax(0, 1fr) auto auto;
+            gap: 18px;
+            align-items: center;
+            padding: 18px 2px
+        }
+
+        .item-row .no {
+            font: 600 11px var(--mono);
+            color: var(--ink2)
+        }
+
+        .item-row .nm {
+            font: 600 21px/1.15 var(--serif)
+        }
+
+        .item-row .nm small {
+            display: block;
+            font: 400 11px var(--mono);
+            color: var(--ink2);
+            letter-spacing: .05em;
+            margin-top: 5px
+        }
+
+        .price {
+            font: 700 13px var(--mono);
+            letter-spacing: .04em;
+            white-space: nowrap
+        }
+
+        button.det {
+            font: 700 10.5px var(--mono);
+            letter-spacing: .12em;
+            background: none;
+            border: 1px solid var(--ink);
+            color: var(--ink);
+            padding: 8px 13px;
+            cursor: pointer
+        }
+
+        button.det span {
+            display: inline-block;
+            width: 12px
+        }
+
+        button.det:hover {
+            background: var(--ink);
+            color: var(--paper)
+        }
+
+        .item-spec {
+            display: none;
+            padding: 0 2px 20px 58px;
+            font: 11.5px/1.8 var(--mono);
+            color: var(--ink2)
+        }
+
+        .item.open .item-spec {
+            display: block
+        }
+
+        .calc {
+            background: var(--ink);
+            color: var(--paper)
+        }
+
+        .calc .shead {
+            border-color: #4a4436
+        }
+
+        .calc .idx {
+            color: var(--ver2)
+        }
+
+        .calc .note {
+            color: #8f8875
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+            gap: 64px;
+            align-items: center
+        }
+
+        .calc p.cc {
+            font: 400 17px/1.6 var(--serif);
+            color: #cfc6ae;
+            max-width: 52ch;
+            margin: 0
+        }
+
+        .c-temp {
+            display: flex;
+            align-items: baseline;
+            gap: 18px;
+            margin-top: 34px
+        }
+
+        .c-temp b {
+            font: 600 clamp(44px, 5vw, 64px)/1 var(--serif);
+            font-variant-numeric: tabular-nums
+        }
+
+        .c-temp span {
+            font: 600 10px var(--mono);
+            letter-spacing: .18em;
+            color: #8f8875
+        }
+
+        .c-mode {
+            font: 700 11px var(--mono);
+            letter-spacing: .18em;
+            color: var(--amber);
+            margin-top: 8px
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 2px;
+            background: #4a4436;
+            margin: 28px 0 8px;
+            cursor: pointer
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 26px;
+            background: var(--ver2);
+            border: 1px solid var(--paper);
+            cursor: ew-resize
+        }
+
+        input[type=range]::-moz-range-thumb {
+            width: 18px;
+            height: 26px;
+            background: var(--ver2);
+            border: 1px solid var(--paper);
+            border-radius: 0;
+            cursor: ew-resize
+        }
+
+        .c-scale {
+            display: flex;
+            justify-content: space-between;
+            font: 10px var(--mono);
+            color: #8f8875
+        }
+
+        .c-acts {
+            display: flex;
+            gap: 10px;
+            margin-top: 28px;
+            flex-wrap: wrap
+        }
+
+        .c-acts button {
+            font: 700 10.5px var(--mono);
+            letter-spacing: .14em;
+            padding: 12px 16px;
+            background: none;
+            border: 1px solid #4a4436;
+            color: #cfc6ae;
+            cursor: pointer
+        }
+
+        .c-acts button:hover {
+            border-color: var(--paper);
+            color: var(--paper)
+        }
+
+        .c-acts button.on {
+            background: var(--ver2);
+            border-color: var(--ver2);
+            color: #1c0d06
+        }
+
+        .c-read {
+            border: 1px solid #4a4436;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 8px 34px;
+            align-items: center
+        }
+
+        .c-out b {
+            font: 600 88px/1 var(--serif)
+        }
+
+        .c-out span {
+            display: block;
+            font: 700 10px var(--mono);
+            letter-spacing: .22em;
+            color: #8f8875;
+            margin-top: 6px
+        }
+
+        #calcStack {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 5px
+        }
+
+        #calcStack i {
+            width: 100%;
+            height: 15px;
+            border: 1px dashed #4a4436
+        }
+
+        #calcStack i.f {
+            background: var(--paper);
+            border: 1px solid var(--paper)
+        }
+
+        #calcStack i.top {
+            background: var(--ver2);
+            border-color: var(--ver2)
+        }
+
+        #calcNote {
+            grid-column: 1/-1;
+            font: italic 400 15px/1.5 var(--serif);
+            color: #cfc6ae;
+            border-top: 1px solid #4a4436;
+            padding-top: 18px;
+            margin: 12px 0 0
+        }
+
+        .jrn-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 7.5fr) minmax(0, 4.5fr);
+            gap: 64px;
+            align-items: start
+        }
+
+        .prose {
+            font: 400 17.5px/1.7 var(--serif);
+            color: #241f16
+        }
+
+        .prose p {
+            margin: 0 0 1.1em
+        }
+
+        .prose p+p {
+            text-indent: 2.4em
+        }
+
+        .prose>p:first-child::first-letter {
+            font: 600 78px/.78 var(--serif);
+            float: left;
+            padding: 10px 12px 0 0;
+            color: var(--ver)
+        }
+
+        .prose blockquote {
+            margin: 34px 0;
+            padding: 0 0 0 26px;
+            border-left: 3px solid var(--ver);
+            font: italic 500 25px/1.4 var(--serif)
+        }
+
+        .jrn-aside {
+            display: flex;
+            flex-direction: column;
+            gap: 28px
+        }
+
+        .wlog {
+            border: 1px solid var(--ink);
+            padding: 20px
+        }
+
+        .wlog h4 {
+            margin: 0 0 12px;
+            font: 700 10px var(--mono);
+            letter-spacing: .2em;
+            color: var(--ver)
+        }
+
+        .wlog div {
+            display: flex;
+            justify-content: space-between;
+            font: 11px var(--mono);
+            padding: 6px 0;
+            border-bottom: 1px dashed var(--line)
+        }
+
+        .disp {
+            background: var(--paper2);
+            border-top: 2px solid var(--ink);
+            border-bottom: 2px solid var(--ink)
+        }
+
+        .disp-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+            gap: 64px;
+            align-items: center;
+            padding: 78px 34px;
+            max-width: 1240px;
+            margin: 0 auto;
+            scroll-margin-top: 20px
+        }
+
+        .disp h2 {
+            font: 600 clamp(34px, 4vw, 52px)/1.02 var(--serif);
+            margin: 0
+        }
+
+        .disp .cc {
+            font: 400 16px/1.65 var(--serif);
+            color: #2a251c;
+            margin: 18px 0 0;
+            max-width: 48ch
+        }
+
+        .field {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            flex-wrap: wrap
+        }
+
+        .field label {
+            flex: 1;
+            min-width: 240px
+        }
+
+        .field label span {
+            display: block;
+            font: 700 9.5px var(--mono);
+            letter-spacing: .18em;
+            color: var(--ink2);
+            margin-bottom: 8px
+        }
+
+        #dispEmail {
+            width: 100%;
+            font: 500 15px var(--mono);
+            background: transparent;
+            border: 0;
+            border-bottom: 2px solid var(--ink);
+            padding: 10px 2px;
+            color: var(--ink);
+            border-radius: 0
+        }
+
+        #dispEmail:focus {
+            outline: none;
+            border-color: var(--ver)
+        }
+
+        #formErr {
+            font: 11px var(--mono);
+            color: var(--ver);
+            margin-top: 8px;
+            min-height: 16px
+        }
+
+        #formDone {
+            font: 15px/1.6 var(--serif);
+            border: 1px solid var(--ink);
+            padding: 22px;
+            background: var(--paper);
+            box-shadow: 8px 8px 0 var(--ink)
+        }
+
+        footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 34px;
+            max-width: 1240px;
+            margin: 0 auto;
+            font: 10.5px var(--mono);
+            letter-spacing: .1em;
+            color: var(--ink2)
+        }
+
+        footer a {
+            color: var(--ink);
+            text-decoration: none;
+            border-bottom: 1px solid var(--line)
+        }
+
+        footer a:hover {
+            border-color: var(--ver)
+        }
+
+        /* ============ overlays, markers, ghost, dim ============ */
+        #overlayCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 51;
+            pointer-events: none
+        }
+
+        #markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 52;
+            pointer-events: none
+        }
+
+        .mk {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            min-width: 20px;
+            height: 20px;
+            padding: 0 4px;
+            border-radius: 50%;
+            background: var(--ver);
+            color: #fdf9ef;
+            border: 1.5px solid #fdf9ef;
+            display: grid;
+            place-items: center;
+            font: 700 10px/1 var(--mono);
+            animation: pop .22s ease;
+            box-shadow: 0 1px 4px rgba(25, 22, 17, .5)
+        }
+
+        .mk.dead {
+            background: var(--paper);
+            color: var(--ver);
+            border: 1.5px dashed var(--ver)
+        }
+
+        @keyframes pop {
+            from {
+                transform: translate(-50%, -50%) scale(.3)
+            }
+        }
+
+        body:not(.mk-on) .mk {
+            display: none
+        }
+
+        .ripple {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            margin: -7px 0 0 -7px;
+            border: 2px solid var(--ver2);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 76;
+            animation: rip .65s ease-out forwards
+        }
+
+        @keyframes rip {
+            from {
+                transform: scale(.4);
+                opacity: 1
+            }
+
+            to {
+                transform: scale(4.5);
+                opacity: 0
+            }
+        }
+
+        #replayDim {
+            position: fixed;
+            inset: 0;
+            bottom: var(--ch);
+            background: rgba(16, 12, 8, .55);
+            z-index: 65;
+            pointer-events: none;
+            display: none
+        }
+
+        .rd-tag {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--ink);
+            color: var(--paper);
+            border: 1px solid var(--paper);
+            padding: 10px 18px;
+            font: 700 10.5px var(--mono);
+            letter-spacing: .2em;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            white-space: nowrap
+        }
+
+        .rd-tag i {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--ver2);
+            animation: pulse 1.6s ease-out infinite
+        }
+
+        #ghost {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 75;
+            pointer-events: none;
+            will-change: transform;
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .4))
+        }
+
+        #ghost .glabel {
+            position: absolute;
+            left: 20px;
+            top: 18px;
+            background: var(--ver);
+            color: var(--paper);
+            font: 700 9px var(--mono);
+            letter-spacing: .12em;
+            padding: 3px 6px;
+            white-space: nowrap
+        }
+
+        #ghost.flash svg {
+            animation: gflash .3s
+        }
+
+        @keyframes gflash {
+            50% {
+                transform: scale(.75)
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(232, 89, 58, .5)
+            }
+
+            70% {
+                box-shadow: 0 0 0 7px rgba(232, 89, 58, 0)
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(232, 89, 58, 0)
+            }
+        }
+
+        /* ============ telemetry console ============ */
+        #console {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: var(--ch);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            background: var(--cbg);
+            color: var(--cink);
+            font-family: var(--mono);
+            border-top: 2px solid var(--ink);
+            box-shadow: 0 -14px 40px rgba(0, 0, 0, .28);
+            transition: height .22s ease
+        }
+
+        body.dragging #console,
+        body.dragging #toasts {
+            transition: none
+        }
+
+        body.cmin {
+            --ch: 46px
+        }
+
+        body.cmin #cTabs,
+        body.cmin .cBody {
+            display: none
+        }
+
+        #cResize {
+            position: absolute;
+            top: -7px;
+            left: 0;
+            right: 0;
+            height: 14px;
+            cursor: ns-resize;
+            z-index: 5
+        }
+
+        #cResize::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 5px;
+            transform: translateX(-50%);
+            width: 46px;
+            height: 3px;
+            background: var(--cline);
+            border-radius: 2px
+        }
+
+        #cResize:hover::after {
+            background: var(--amber)
+        }
+
+        #cHead {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            padding: 0 18px;
+            height: 46px;
+            border-bottom: 1px solid var(--cline);
+            flex: none
+        }
+
+        .rec {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font: 700 11px var(--mono);
+            letter-spacing: .16em;
+            color: #ff8272
+        }
+
+        .rec i {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--ver2);
+            animation: pulse 1.6s ease-out infinite
+        }
+
+        .rec.paused {
+            color: var(--cmut)
+        }
+
+        .rec.paused i {
+            background: #57513f;
+            animation: none
+        }
+
+        .rec.suspend {
+            color: var(--amber)
+        }
+
+        .rec.suspend i {
+            background: var(--amber)
+        }
+
+        .wordmark {
+            font: 700 12px var(--mono);
+            letter-spacing: .3em
+        }
+
+        #hdrSid {
+            display: block;
+            font: 500 9px var(--mono);
+            letter-spacing: .08em;
+            color: #7d7663;
+            margin-top: 2px
+        }
+
+        .hstats {
+            display: flex;
+            gap: 20px;
+            margin-left: auto
+        }
+
+        .hstat b {
+            display: block;
+            font: 600 13px var(--mono);
+            font-variant-numeric: tabular-nums
+        }
+
+        .hstat span {
+            font: 600 8.5px var(--mono);
+            letter-spacing: .14em;
+            color: #7d7663
+        }
+
+        .hbtns {
+            display: flex;
+            gap: 6px
+        }
+
+        .hbtn {
+            width: 30px;
+            height: 30px;
+            display: grid;
+            place-items: center;
+            background: none;
+            border: 1px solid var(--cline);
+            color: var(--cmut);
+            cursor: pointer;
+            padding: 0
+        }
+
+        .hbtn:hover {
+            color: var(--cink);
+            border-color: var(--cmut)
+        }
+
+        body.cmin #btnCollapse .ic {
+            transform: rotate(180deg)
+        }
+
+        #cTabs {
+            display: flex;
+            flex: none;
+            border-bottom: 1px solid var(--cline);
+            overflow-x: auto
+        }
+
+        .tabBtn {
+            font: 600 11px var(--mono);
+            letter-spacing: .14em;
+            padding: 11px 16px;
+            background: none;
+            border: 0;
+            border-bottom: 2px solid transparent;
+            color: var(--cmut);
+            cursor: pointer;
+            white-space: nowrap
+        }
+
+        .tabBtn:hover {
+            color: var(--cink)
+        }
+
+        .tabBtn[aria-selected="true"] {
+            color: var(--cink);
+            border-color: var(--ver2)
+        }
+
+        .cBody {
+            flex: 1;
+            min-height: 0;
+            position: relative
+        }
+
+        .panel {
+            position: absolute;
+            inset: 0;
+            overflow: auto;
+            padding: 14px 16px
+        }
+
+        .panel[hidden] {
+            display: none
+        }
+
+        .lbl {
+            font: 600 9.5px/1 var(--mono);
+            letter-spacing: .16em;
+            color: var(--cmut)
+        }
+
+        .ic {
+            width: 14px;
+            height: 14px;
+            display: block
+        }
+
+        #console ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px
+        }
+
+        #console ::-webkit-scrollbar-thumb {
+            background: #332e22;
+            border: 2px solid var(--cbg)
+        }
+
+        #console {
+            scrollbar-width: thin;
+            scrollbar-color: #332e22 transparent
+        }
+
+        /* overview */
+        .ov-top {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 18px;
+            margin-bottom: 14px
+        }
+
+        .eng-num {
+            margin-top: 10px
+        }
+
+        .eng-num b {
+            font: 600 46px/1 var(--mono);
+            font-variant-numeric: tabular-nums
+        }
+
+        .eng-num span {
+            color: var(--cmut);
+            font-size: 12px;
+            margin-left: 6px
+        }
+
+        .segs {
+            display: flex;
+            gap: 3px;
+            margin: 12px 0 16px
+        }
+
+        .segs i {
+            flex: 1;
+            height: 14px;
+            background: #26221a;
+            border: 1px solid #322d23
+        }
+
+        .segs i.on {
+            background: var(--amber);
+            border-color: var(--amber)
+        }
+
+        .comp .cr {
+            display: grid;
+            grid-template-columns: 64px 1fr 46px;
+            gap: 10px;
+            align-items: center;
+            margin: 5px 0;
+            font: 10.5px var(--mono);
+            color: var(--cmut)
+        }
+
+        .cr i {
+            height: 5px;
+            background: #26221a;
+            display: block
+        }
+
+        .cr b {
+            display: block;
+            height: 100%;
+            background: #c99540
+        }
+
+        .cr em {
+            color: #7d7663;
+            text-align: right;
+            font-style: normal
+        }
+
+        .ai-bar {
+            display: flex;
+            height: 8px;
+            margin-top: 14px;
+            background: #26221a
+        }
+
+        #aiActive {
+            background: #8fae6a
+        }
+
+        #aiIdle {
+            background: #4a4436
+        }
+
+        .ai-txt {
+            font: 10px var(--mono);
+            color: var(--cmut);
+            margin-top: 6px
+        }
+
+        .ov-read {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--cline);
+            border: 1px solid var(--cline)
+        }
+
+        .ro {
+            background: var(--cbg);
+            padding: 12px 14px;
+            min-width: 0
+        }
+
+        .ro.w2 {
+            grid-column: span 2
+        }
+
+        .ro b {
+            display: block;
+            font: 600 24px/1.1 var(--mono);
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .ro span {
+            display: block;
+            font: 600 9px var(--mono);
+            letter-spacing: .14em;
+            color: var(--cmut);
+            margin-top: 5px
+        }
+
+        .ro em {
+            display: block;
+            font: 10px var(--mono);
+            font-style: normal;
+            color: #b08b4f;
+            margin-top: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .mini {
+            height: 4px;
+            background: #26221a;
+            margin-top: 8px
+        }
+
+        .mini i {
+            display: block;
+            height: 100%;
+            background: var(--ver2);
+            width: 0
+        }
+
+        .ov-pulse {
+            border: 1px solid var(--cline);
+            padding: 10px 12px 8px;
+            margin-bottom: 14px
+        }
+
+        .ph {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 6px
+        }
+
+        .ph b {
+            font: 600 12px var(--mono);
+            color: var(--amber)
+        }
+
+        #ovPulse {
+            width: 100%;
+            height: 64px;
+            display: block
+        }
+
+        .ov-bottom {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 18px
+        }
+
+        #funnel {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1px;
+            background: var(--cline);
+            border: 1px solid var(--cline);
+            margin: 10px 0 0;
+            padding: 0
+        }
+
+        #funnel li {
+            background: var(--cbg);
+            padding: 10px
+        }
+
+        #funnel .sq {
+            width: 10px;
+            height: 10px;
+            border: 1.5px solid #4a4436;
+            display: block;
+            margin-bottom: 8px
+        }
+
+        #funnel li.done .sq {
+            background: var(--amber);
+            border-color: var(--amber)
+        }
+
+        #funnel b {
+            display: block;
+            font: 600 8.5px var(--mono);
+            letter-spacing: .1em;
+            color: var(--cmut);
+            margin-bottom: 4px
+        }
+
+        #funnel li.done b {
+            color: var(--cink)
+        }
+
+        #funnel span {
+            font: 600 13px var(--mono);
+            color: #7d7663
+        }
+
+        #funnel li.done span {
+            color: var(--amber)
+        }
+
+        #dwellList {
+            list-style: none;
+            margin: 10px 0 0;
+            padding: 0
+        }
+
+        #dwellList li {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 90px 44px;
+            gap: 8px;
+            align-items: center;
+            padding: 7px 0;
+            border-bottom: 1px dashed #26221a;
+            font: 11px var(--mono)
+        }
+
+        #dwellList .dl {
+            color: #cfc6ae;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap
+        }
+
+        #dwellList i {
+            height: 4px;
+            background: #26221a;
+            display: block
+        }
+
+        #dwellList b {
+            background: #b08b4f;
+            height: 100%;
+            display: block
+        }
+
+        #dwellList em {
+            color: #7d7663;
+            font-style: normal;
+            text-align: right
+        }
+
+        #dwellList .empty {
+            display: block;
+            color: #7d7663;
+            border: 0
+        }
+
+        /* replay */
+        .rp-transport {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap
+        }
+
+        .ictl {
+            width: 36px;
+            height: 36px;
+            display: grid;
+            place-items: center;
+            background: #221f18;
+            border: 1px solid var(--cline);
+            color: var(--cink);
+            cursor: pointer;
+            padding: 0
+        }
+
+        .ictl:hover {
+            background: #2b2720
+        }
+
+        .ictl.big {
+            width: 46px;
+            height: 46px;
+            background: var(--ver2);
+            color: #1a0e08;
+            border-color: transparent
+        }
+
+        .ictl.big:hover {
+            background: #ff6d47
+        }
+
+        .ictl.tog.on {
+            color: #1a1610;
+            background: var(--amber);
+            border-color: var(--amber)
+        }
+
+        .rp-speed {
+            display: flex;
+            border: 1px solid var(--cline)
+        }
+
+        .rp-speed button {
+            font: 600 10px var(--mono);
+            padding: 9px 11px;
+            background: none;
+            border: 0;
+            border-left: 1px solid var(--cline);
+            color: var(--cmut);
+            cursor: pointer
+        }
+
+        .rp-speed button:first-child {
+            border-left: 0
+        }
+
+        .rp-speed button.on {
+            color: #1a1610;
+            background: var(--amber)
+        }
+
+        .rp-clock {
+            margin-left: auto;
+            font: 600 14px var(--mono)
+        }
+
+        .rp-clock span,
+        .rp-clock em {
+            color: var(--cmut);
+            font-style: normal;
+            font-size: 11px
+        }
+
+        #rpTimeline {
+            width: 100%;
+            height: 76px;
+            display: block;
+            cursor: ew-resize;
+            border: 1px solid var(--cline);
+            touch-action: none
+        }
+
+        .rp-state {
+            font: 11px/1.7 var(--mono);
+            color: var(--cmut);
+            margin: 10px 0 0
+        }
+
+        /* heatmap */
+        .hm-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap
+        }
+
+        .hm-modes {
+            display: flex;
+            border: 1px solid var(--cline)
+        }
+
+        .hm-modes button {
+            font: 600 10px var(--mono);
+            letter-spacing: .1em;
+            padding: 9px 13px;
+            background: none;
+            border: 0;
+            border-left: 1px solid var(--cline);
+            color: var(--cmut);
+            cursor: pointer
+        }
+
+        .hm-modes button:first-child {
+            border-left: 0
+        }
+
+        .hm-modes button.on {
+            color: #1a1610;
+            background: var(--amber)
+        }
+
+        .hm-rad {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font: 600 10px var(--mono);
+            color: var(--cmut)
+        }
+
+        .hm-rad input {
+            width: 130px;
+            accent-color: var(--amber)
+        }
+
+        .chk {
+            font: 600 10px var(--mono);
+            color: var(--cmut);
+            display: flex;
+            gap: 7px;
+            align-items: center
+        }
+
+        .chk input {
+            accent-color: var(--ver2)
+        }
+
+        .hm-stats {
+            font: 10.5px var(--mono);
+            color: #b08b4f;
+            margin-left: auto
+        }
+
+        .cbtn {
+            font: 600 9.5px var(--mono);
+            letter-spacing: .12em;
+            padding: 9px 12px;
+            background: none;
+            border: 1px solid var(--cline);
+            color: var(--cmut);
+            cursor: pointer
+        }
+
+        .cbtn:hover {
+            color: var(--cink);
+            border-color: var(--amber)
+        }
+
+        .cbtn.on {
+            color: #1a1610;
+            background: var(--amber);
+            border-color: var(--amber)
+        }
+
+        .cbtn.dark {
+            border-color: var(--ink);
+            color: var(--ink)
+        }
+
+        .cbtn.dark:hover {
+            background: var(--ink);
+            color: var(--paper);
+            border-color: var(--ink)
+        }
+
+        .hm-legend {
+            margin-top: 16px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font: 10px var(--mono);
+            color: #7d7663;
+            flex-wrap: wrap
+        }
+
+        .hm-legend span {
+            display: flex;
+            gap: 7px;
+            align-items: center
+        }
+
+        .lg-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #ff7a52
+        }
+
+        .lg-x {
+            color: var(--amber);
+            font-weight: 700
+        }
+
+        .lg-ring {
+            width: 9px;
+            height: 9px;
+            border: 2px solid #ff7a52;
+            border-radius: 50%
+        }
+
+        .lg-note {
+            flex: 1;
+            min-width: 220px;
+            max-width: 560px
+        }
+
+        /* log */
+        .logp {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            overflow: hidden
+        }
+
+        .lg-top {
+            display: flex;
+            gap: 8px;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--cline);
+            flex-wrap: wrap;
+            align-items: center
+        }
+
+        .chips {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap
+        }
+
+        .chip {
+            font: 600 10px var(--mono);
+            letter-spacing: .06em;
+            padding: 5px 10px;
+            border: 1px solid var(--cline);
+            border-radius: 999px;
+            background: none;
+            color: var(--cmut);
+            cursor: pointer
+        }
+
+        .chip.on {
+            color: var(--cink);
+            border-color: var(--amber);
+            background: rgba(217, 148, 13, .12)
+        }
+
+        .chip b {
+            opacity: .65;
+            margin-left: 5px;
+            font-weight: 500
+        }
+
+        #feedSearch {
+            margin-left: auto;
+            background: #0f0d09;
+            border: 1px solid var(--cline);
+            color: var(--cink);
+            font: 11px var(--mono);
+            padding: 6px 10px;
+            width: 190px
+        }
+
+        #feed {
+            flex: 1;
+            overflow: auto;
+            padding: 8px 12px;
+            font: 11.5px/1.7 var(--mono)
+        }
+
+        .frow {
+            display: flex;
+            gap: 10px;
+            padding: 1px 0;
+            border-bottom: 1px dashed #26221a
+        }
+
+        .frow .ft {
+            color: var(--cmut);
+            flex: none;
+            width: 46px
+        }
+
+        .frow .tag {
+            flex: none;
+            width: 58px;
+            letter-spacing: .08em;
+            font-weight: 600;
+            font-size: 9.5px;
+            padding-top: 2px
+        }
+
+        .g-click {
+            color: #ff7a52
+        }
+
+        .g-key {
+            color: #a9bd7e
+        }
+
+        .g-form {
+            color: #e6b437
+        }
+
+        .g-text {
+            color: #cdb87e
+        }
+
+        .g-system {
+            color: #8f8875
+        }
+
+        .g-scroll {
+            color: #b08b4f
+        }
+
+        .fd {
+            color: #cfc6ae;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap
+        }
+
+        /* data */
+        .datap {
+            display: flex;
+            flex-direction: column
+        }
+
+        .dt-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 14px
+        }
+
+        .dbtn {
+            font: 600 10px var(--mono);
+            letter-spacing: .1em;
+            padding: 9px 13px;
+            border: 1px solid var(--cline);
+            color: var(--cink);
+            display: inline-flex;
+            gap: 7px;
+            align-items: center;
+            background: #221f18;
+            cursor: pointer
+        }
+
+        .dbtn:hover {
+            border-color: var(--amber);
+            color: var(--amber)
+        }
+
+        .dbtn.danger {
+            color: #ff8272;
+            border-color: #5a2c22
+        }
+
+        .dbtn.danger:hover {
+            background: #3a221c
+        }
+
+        .dbtn:disabled {
+            opacity: .35;
+            cursor: not-allowed
+        }
+
+        .dt-sep {
+            width: 1px;
+            height: 22px;
+            background: var(--cline)
+        }
+
+        .save-info {
+            margin-left: auto;
+            font: 10px var(--mono);
+            color: #7d7663
+        }
+
+        .dt-cols {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 310px 1fr;
+            gap: 16px
+        }
+
+        .dt-env {
+            overflow: auto;
+            min-height: 0
+        }
+
+        #envRows {
+            margin: 10px 0 0
+        }
+
+        #envRows div {
+            display: grid;
+            grid-template-columns: 92px 1fr;
+            gap: 10px;
+            padding: 6px 0;
+            border-bottom: 1px dashed #26221a;
+            font: 10.5px var(--mono)
+        }
+
+        #envRows dt {
+            color: var(--cmut)
+        }
+
+        #envRows dd {
+            margin: 0;
+            color: #cfc6ae;
+            overflow-wrap: anywhere
+        }
+
+        .dt-out {
+            display: flex;
+            flex-direction: column;
+            min-height: 0
+        }
+
+        #dataOut {
+            flex: 1;
+            min-height: 140px;
+            width: 100%;
+            background: #0f0d09;
+            border: 1px solid var(--cline);
+            color: #cdbf9d;
+            font: 11px/1.6 var(--mono);
+            padding: 12px;
+            resize: none
+        }
+
+        /* toasts + dialog */
+        #toasts {
+            position: fixed;
+            right: 18px;
+            bottom: calc(var(--ch) + 18px);
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: bottom .22s
+        }
+
+        .toast {
+            background: var(--paper);
+            color: var(--ink);
+            border: 1px solid var(--ink);
+            box-shadow: 6px 6px 0 rgba(25, 22, 17, .85);
+            padding: 13px 14px;
+            min-width: 260px;
+            max-width: 360px;
+            font: 12px/1.5 var(--mono);
+            animation: tin .22s ease;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start
+        }
+
+        .toast.warn {
+            border-color: var(--ver);
+            box-shadow: 6px 6px 0 var(--ver)
+        }
+
+        .toast.out {
+            animation: tout .2s forwards
+        }
+
+        .tmsg {
+            flex: 1
+        }
+
+        .tact {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            width: 100%
+        }
+
+        .tact button {
+            flex: 1;
+            font: 700 10px var(--mono);
+            letter-spacing: .1em;
+            padding: 9px;
+            border: 1px solid var(--ink);
+            background: none;
+            color: var(--ink);
+            cursor: pointer
+        }
+
+        .tact button:hover,
+        .tact button.pri {
+            background: var(--ink);
+            color: var(--paper)
+        }
+
+        .tx {
+            background: none;
+            border: 0;
+            cursor: pointer;
+            padding: 2px;
+            color: var(--ink2)
+        }
+
+        .tx:hover {
+            color: var(--ver)
+        }
+
+        @keyframes tin {
+            from {
+                transform: translateY(12px);
+                opacity: 0
+            }
+        }
+
+        @keyframes tout {
+            to {
+                transform: translateY(8px);
+                opacity: 0
+            }
+        }
+
+        dialog {
+            width: min(460px, 92vw);
+            border: 0;
+            padding: 0;
+            background: transparent;
+            color: var(--ink)
+        }
+
+        dialog::backdrop {
+            background: rgba(20, 16, 10, .55)
+        }
+
+        .dlg-in {
+            background: var(--paper);
+            border: 1px solid var(--ink);
+            box-shadow: 10px 10px 0 rgba(25, 22, 17, .85);
+            padding: 26px
+        }
+
+        .dlg-in h2 {
+            font: 600 26px var(--serif);
+            margin: 0 0 12px
+        }
+
+        .dlg-in p {
+            font: 12px/1.7 var(--mono);
+            color: #5f574a;
+            margin: 0
+        }
+
+        .dlg-act {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 22px
+        }
+
+        /* responsive */
+        @media(max-width:1020px) {
+
+            .hero,
+            .cat-grid,
+            .calc-grid,
+            .jrn-grid,
+            .disp-grid {
+                grid-template-columns: 1fr;
+                gap: 44px
+            }
+
+            .ov-top {
+                grid-template-columns: 1fr
+            }
+
+            .ov-bottom {
+                grid-template-columns: 1fr
+            }
+
+            .hstat:nth-child(3),
+            .hstat:nth-child(4) {
+                display: none
+            }
+        }
+
+        @media(max-width:700px) {
+            body {
+                padding-bottom: calc(var(--ch) + 16px)
+            }
+
+            .mast-bar,
+            .mast-meta,
+            .hero,
+            section.blk,
+            .disp-grid,
+            footer {
+                padding-left: 20px;
+                padding-right: 20px
+            }
+
+            .ov-read {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .hstats .hstat:not(:first-child) {
+                display: none
+            }
+
+            .wordmark #hdrSid {
+                display: none
+            }
+
+            .item-row {
+                grid-template-columns: 28px minmax(0, 1fr) auto
+            }
+
+            .item-row .det {
+                grid-column: 1/-1;
+                justify-self: start
+            }
+
+            .dt-cols {
+                grid-template-columns: 1fr
+            }
+
+            .dt-env {
+                max-height: 180px
+            }
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+
+            .ticker-in,
+            .rec i,
+            .rd-tag i {
+                animation: none
+            }
+
+            html {
+                scroll-behavior: auto
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- icon sprite -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+        <symbol id="i-play" viewBox="0 0 24 24">
+            <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+        </symbol>
+        <symbol id="i-pause" viewBox="0 0 24 24">
+            <path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor" />
+        </symbol>
+        <symbol id="i-stop" viewBox="0 0 24 24">
+            <path d="M6.5 6.5h11v11h-11z" fill="currentColor" />
+        </symbol>
+        <symbol id="i-loop" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 2l4 4-4 4" />
+                <path d="M3 11v-1a4 4 0 014-4h14" />
+                <path d="M7 22l-4-4 4-4" />
+                <path d="M21 13v1a4 4 0 01-4 4H3" />
+            </g>
+        </symbol>
+        <symbol id="i-dl" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                <path d="M7 10l5 5 5-5" />
+                <path d="M12 15V3" />
+            </g>
+        </symbol>
+        <symbol id="i-copy" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="12" height="12" rx="1" />
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+            </g>
+        </symbol>
+        <symbol id="i-trash" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18" />
+                <path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+            </g>
+        </symbol>
+        <symbol id="i-x" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M18 6L6 18M6 6l12 12" />
+            </g>
+        </symbol>
+        <symbol id="i-chev" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 15l-6-6-6 6" />
+            </g>
+        </symbol>
+        <symbol id="i-save" viewBox="0 0 24 24">
+            <path d="M19 21l-7-4.5L5 21V5a2 2 0 012-2h10a2 2 0 012 2z" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-restore" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2.5 4v6h6" />
+                <path d="M4.6 15a9 9 0 102.1-9.4L2.5 10" />
+            </g>
+        </symbol>
+        <symbol id="i-doc" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                <path d="M14 2v6h6" />
+                <path d="M16 13H8M16 17H8M10 9H8" />
+            </g>
+        </symbol>
+    </svg>
+
+    <!-- ================= DEMO SITE ================= -->
+    <div id="top" class="masthead">
+        <div class="mast-bar">
+            <div class="brand">NORTHWARD SUPPLY CO.</div>
+            <nav class="mast-nav">
+                <a href="#equipment">EQUIPMENT</a><a href="#calc">COLD INDEX</a><a href="#journal">FIELD NOTES</a><a
+                    href="#dispatch">DISPATCH</a>
+            </nav>
+        </div>
+        <div class="mast-meta"><span>EST. 1987 — TROMSØ, NORWAY</span><span>69.6492° N · 18.9553° E</span><span>OPEN
+                07–18 · MON–SAT</span></div>
+    </div>
+
+    <section class="hero">
+        <div>
+            <p class="kicker">WINTER CATALOGUE — Nº 41</p>
+            <h1>Outfit for the <em>long cold.</em></h1>
+            <p class="lede">Field-tested clothing and instruments for people who go far on purpose. Cut, sewn and
+                stress-tested above the Arctic Circle since 1987 — no gadgets, no seasons, only kit that holds.</p>
+            <div class="hero-cta">
+                <a class="btn pri" href="#equipment">BROWSE EQUIPMENT</a>
+                <a class="btn" href="#journal">READ FIELD NOTES</a>
+            </div>
+        </div>
+        <figure class="plate">
+            <div class="ph"><img src="https://picsum.photos/seed/northward-senja/900/1120.jpg"
+                    alt="Ridgeline above a frozen fjord at dusk" loading="lazy"></div>
+            <figcaption><span>FIG. 01 — SENJA RIDGELINE, FEBRUARY</span><span>−22°C · WIND 14 M/S</span></figcaption>
+        </figure>
+    </section>
+
+    <div class="ticker" aria-hidden="true">
+        <div class="ticker-in">
+            <div><span>KVALØYA 69.66° N</span><span>TROMSØ 69.65° N</span><span>LYNGEN 69.78° N</span><span>NARVIK
+                    68.44° N</span><span>ANDØYA 70.07° N</span><span>SVALBARD 78.22° N</span><span>NORDKAPP 71.17°
+                    N</span></div>
+            <div><span>KVALØYA 69.66° N</span><span>TROMSØ 69.65° N</span><span>LYNGEN 69.78° N</span><span>NARVIK
+                    68.44° N</span><span>ANDØYA 70.07° N</span><span>SVALBARD 78.22° N</span><span>NORDKAPP 71.17°
+                    N</span></div>
+        </div>
+    </div>
+
+    <section class="blk" id="equipment">
+        <div class="shead"><span class="idx">Nº 01</span>
+            <h2>Equipment</h2><span class="fill"></span><span class="note">FIVE PIECES, NO GADGETS</span>
+        </div>
+        <div class="cat-grid">
+            <article class="feat">
+                <figure class="plate">
+                    <div class="ph"><img src="https://picsum.photos/seed/aurora-anorak/980/720.jpg"
+                            alt="Detail of a storm hood on a shell anorak" loading="lazy"></div>
+                    <figcaption><span>FIG. 02 — AURORA ANORAK</span><span>3-LAYER SHELL</span></figcaption>
+                </figure>
+                <h3>Aurora Anorak</h3>
+                <p class="fprice">€480</p>
+                <p>Three-layer recycled shell with a helmet-compatible storm hood and pit zips vented for high output.
+                    Seam-sealed to 20,000&nbsp;mm, cut long at the back for sled-pulling days.</p>
+                <button class="btn pri addMan" type="button" data-name="Aurora Anorak">ADD TO MANIFEST</button>
+            </article>
+            <div class="list">
+                <div class="item">
+                    <div class="item-row"><span class="no">01</span><span class="nm">Polaris Mitt<small>GOAT LEATHER ·
+                                WOOL PILE</small></span><span class="price">€120</span><button class="det" type="button"
+                            aria-expanded="false"><span>+</span>DETAILS</button></div>
+                    <div class="item-spec">Goat leather palm · wool pile back · field-tested at −32°C · sizes 7–11</div>
+                </div>
+                <div class="item">
+                    <div class="item-row"><span class="no">02</span><span class="nm">Isfjord Parka<small>750-FILL DOWN ·
+                                −35° RATING</small></span><span class="price">€690</span><button class="det"
+                            type="button" aria-expanded="false"><span>+</span>DETAILS</button></div>
+                    <div class="item-spec">750-fill goose down · two-way storm zip · detachable ruff · interior sling
+                        seat</div>
+                </div>
+                <div class="item">
+                    <div class="item-row"><span class="no">03</span><span class="nm">Havsul Knit<small>COASTAL WOOL ·
+                                SAILCLOTH ELBOWS</small></span><span class="price">€190</span><button class="det"
+                            type="button" aria-expanded="false"><span>+</span>DETAILS</button></div>
+                    <div class="item-spec">Coastal wool · sailcloth elbow patches · pre-shrunk · sizes XS–XXL</div>
+                </div>
+                <div class="item">
+                    <div class="item-row"><span class="no">04</span><span class="nm">Fjellstokk Probe<small>240 CM
+                                AVALANCHE</small></span><span class="price">€75</span><button class="det" type="button"
+                            aria-expanded="false"><span>+</span>DETAILS</button></div>
+                    <div class="item-spec">240 cm · hardened steel tip · 6061 alloy · 310 g · nests to 42 cm</div>
+                </div>
+                <div class="item">
+                    <div class="item-row"><span class="no">05</span><span class="nm">Kompass 54<small>LIQUID-DAMPED ·
+                                LUMINOUS</small></span><span class="price">€95</span><button class="det" type="button"
+                            aria-expanded="false"><span>+</span>DETAILS</button></div>
+                    <div class="item-spec">Liquid-damped needle · luminous card · ±1° graduation · brass bezel</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="calc" id="calc">
+        <div class="blk">
+            <div class="shead"><span class="idx">Nº 02</span>
+                <h2>Cold Index</h2><span class="fill"></span><span class="note">A FIELD LAYERING CALCULATOR</span>
+            </div>
+            <div class="calc-grid">
+                <div>
+                    <p class="cc">Set the temperature and your output. The index returns a layer count the way an old
+                        guide would — bluntly, and with an opinion about your gloves.</p>
+                    <div class="c-temp"><b id="calcTempVal">−12°C</b><span>AMBIENT</span></div>
+                    <div class="c-mode" id="calcActVal">STILL WATCH</div>
+                    <label class="hm-rad" style="color:#8f8875" for="calcTemp">TEMPERATURE</label>
+                    <input type="range" id="calcTemp" min="-35" max="5" value="-12" step="1"
+                        aria-label="Ambient temperature">
+                    <div class="c-scale"><span>−35°</span><span>−20°</span><span>−5°</span><span>+5°</span></div>
+                    <div class="c-acts" role="group" aria-label="Activity level">
+                        <button type="button" class="on" data-a="0">STILL WATCH</button><button type="button"
+                            data-a="1">ON THE MOVE</button><button type="button" data-a="2">HIGH OUTPUT</button>
+                    </div>
+                </div>
+                <div class="c-read">
+                    <div class="c-out"><b id="calcOut">3</b><span>LAYERS</span></div>
+                    <div id="calcStack" aria-hidden="true"></div>
+                    <p id="calcNote">Base, mid, shell. Hood up above the treeline.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="blk" id="journal">
+        <div class="shead"><span class="idx">Nº 03</span>
+            <h2>Field Notes</h2><span class="fill"></span><span class="note">Nº 12 — FEBRUARY, SENJA</span>
+        </div>
+        <div class="jrn-grid">
+            <div class="prose" id="journalEntry">
+                <p>We skinned up the west couloir in the blue hour, ropes coiled, the thermometer swinging between
+                    opinions. At the ridge the wind found the gap in my layers that the catalogue had promised did not
+                    exist. That is the thing about cold: it is an honest auditor. It finds the line you skipped, the
+                    seam you trusted, the mitten you left drying by the stove.</p>
+                <blockquote>“Cold is an honest auditor. It finds the seam you trusted and the one you didn’t.”
+                </blockquote>
+                <p>By noon the sky had hardened into that particular Arctic silver that makes distances lie. We
+                    navigated by compass and stubbornness in equal measure. The Kompass 54 never blinked —
+                    liquid-damped, patient, indifferent to weather in the way only good instruments are.</p>
+                <p>We were down by four, headlamps making small theaters of the snow. In the hut I wrote the day into
+                    the logbook, boiled snow for tea, and repaired a torn wind flap with sailcloth and dental floss, as
+                    one does. The kit came home wet, scorched at the cuffs, and completely correct.</p>
+            </div>
+            <aside class="jrn-aside">
+                <figure class="plate">
+                    <div class="ph"><img src="https://picsum.photos/seed/northward-hut/720/880.jpg"
+                            alt="A timber hut under low winter light" loading="lazy"></div>
+                    <figcaption><span>FIG. 03 — THE HUT, 16:40</span><span>−21°C · CLEAR</span></figcaption>
+                </figure>
+                <div class="wlog">
+                    <h4>WEATHER LOG — THIS PAGE</h4>
+                    <div><span>06:12</span><span>−19° · CLEAR</span></div>
+                    <div><span>09:40</span><span>−22° · WIND 14 M/S</span></div>
+                    <div><span>12:05</span><span>−24° · SNOW</span></div>
+                    <div><span>15:30</span><span>−21° · BLUE HOUR</span></div>
+                </div>
+                <button class="btn sm" id="btnCopyEntry" type="button">COPY THIS ENTRY</button>
+            </aside>
+        </div>
+    </section>
+
+    <section class="disp" id="dispatch">
+        <div class="disp-grid">
+            <div>
+                <h2>Field Dispatch</h2>
+                <p class="cc">One letter, monthly. Ice conditions, new kit, route notes from the high latitudes. No
+                    noise, no discounts, no urgency.</p>
+            </div>
+            <div>
+                <form id="dispatchForm" novalidate>
+                    <div class="field">
+                        <label for="dispEmail"><span>YOUR EMAIL</span>
+                            <input id="dispEmail" name="email" type="email" autocomplete="email"
+                                placeholder="you@somewhere.no">
+                        </label>
+                        <button class="btn pri" type="submit">SUBSCRIBE</button>
+                    </div>
+                    <p id="formErr" role="alert"></p>
+                </form>
+                <div id="formDone" hidden>Dispatch confirmed. The first letter arrives with the next cold front — until
+                    then, keep your cuffs sealed.</div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <span>NORTHWARD SUPPLY CO. — GRØNNEGATA 12, 9008 TROMSØ</span>
+        <span>ALL TELEMETRY STAYS IN THIS BROWSER — NOTHING LEAVES YOUR MACHINE</span>
+        <a href="#top">BACK TO TOP</a>
+    </footer>
+
+    <!-- ================= TRACKING LAYERS ================= -->
+    <canvas id="overlayCanvas" aria-hidden="true"></canvas>
+    <div id="markers" aria-hidden="true"></div>
+    <div id="replayDim" aria-hidden="true">
+        <div class="rd-tag"><i></i>SESSION REPLAY — RECORDING SUSPENDED</div>
+    </div>
+    <div id="ghost" hidden aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 24 24">
+            <path d="M5 2l7.5 17 2.2-6.3L21 10.5z" fill="#f2ecdf" stroke="#191611" stroke-width="1.4"
+                stroke-linejoin="round" />
+        </svg>
+        <span class="glabel">REPLAY</span>
+    </div>
+
+    <!-- ================= TELEMETRY CONSOLE ================= -->
+    <aside id="console" aria-label="Session telemetry console">
+        <div id="cResize" title="Drag to resize"></div>
+        <header id="cHead">
+            <div class="rec" id="recDot"><i></i><span id="recTxt">REC</span></div>
+            <div class="wordmark">TELEMETRY<span id="hdrSid"></span></div>
+            <div class="hstats">
+                <div class="hstat"><b id="hdrTime">00:00</b><span>ELAPSED</span></div>
+                <div class="hstat"><b id="hdrClk">0</b><span>CLICKS</span></div>
+                <div class="hstat"><b id="hdrCur">0</b><span>CURSOR</span></div>
+                <div class="hstat"><b id="hdrDep">0%</b><span>DEPTH</span></div>
+                <div class="hstat"><b id="hdrEvt">0</b><span>EVENTS</span></div>
+            </div>
+            <div class="hbtns">
+                <button class="hbtn" id="btnPause" type="button" aria-label="Pause recording"></button>
+                <button class="hbtn" id="btnResetTop" type="button" aria-label="Reset session"><svg class="ic">
+                        <use href="#i-trash" />
+                    </svg></button>
+                <button class="hbtn" id="btnCollapse" type="button" aria-label="Collapse console"><svg class="ic">
+                        <use href="#i-chev" />
+                    </svg></button>
+            </div>
+        </header>
+        <nav id="cTabs" role="tablist">
+            <button class="tabBtn" role="tab" data-tab="overview" aria-selected="true">OVERVIEW</button>
+            <button class="tabBtn" role="tab" data-tab="replay" aria-selected="false">REPLAY</button>
+            <button class="tabBtn" role="tab" data-tab="heatmap" aria-selected="false">HEATMAP</button>
+            <button class="tabBtn" role="tab" data-tab="log" aria-selected="false">LOG</button>
+            <button class="tabBtn" role="tab" data-tab="data" aria-selected="false">DATA</button>
+        </nav>
+        <div class="cBody">
+            <section class="panel" data-panel="overview" role="tabpanel">
+                <div class="ov-top">
+                    <div>
+                        <div class="lbl">ENGAGEMENT INDEX</div>
+                        <div class="eng-num"><b id="ovEng">0</b><span>/ 100</span></div>
+                        <div class="segs" id="ovSegs" aria-hidden="true"></div>
+                        <div class="comp" id="ovComp"></div>
+                        <div class="ai-bar"><i id="aiActive" style="width:100%"></i><i id="aiIdle"></i></div>
+                        <div class="ai-txt" id="aiTxt">ACTIVE 00:00 · IDLE 00:00</div>
+                    </div>
+                    <div class="ov-read">
+                        <div class="ro w2"><b id="roClicks">0</b><span>CLICKS</span><em id="roClicksSub">0 dead · 0
+                                rage</em></div>
+                        <div class="ro"><b id="roCursor">0</b><span>CURSOR TRAVEL · PX</span><em id="roCursorSub">≈ 0.0
+                                m</em></div>
+                        <div class="ro"><b id="roDepth">0%</b><span>SCROLL DEPTH</span>
+                            <div class="mini"><i id="roDepthBar"></i></div>
+                        </div>
+                        <div class="ro"><b id="roKeys">0</b><span>KEY EVENTS</span><em id="roKeysSub">—</em></div>
+                        <div class="ro"><b id="roText">0</b><span>SELECTIONS</span><em id="roTextSub">copies 0</em>
+                        </div>
+                        <div class="ro w2"><b id="roFirst">—</b><span>FIRST INTERACTION · AFTER LOAD</span><em>live
+                                cursor sampling every 50 ms</em></div>
+                    </div>
+                </div>
+                <div class="ov-pulse">
+                    <div class="ph"><span class="lbl">EVENT RATE — LAST 90 S</span><b id="pulseNow">0.0/s</b></div>
+                    <canvas id="ovPulse"></canvas>
+                </div>
+                <div class="ov-bottom">
+                    <div>
+                        <div class="lbl">SESSION FUNNEL</div>
+                        <ol id="funnel"></ol>
+                    </div>
+                    <div>
+                        <div class="lbl">ATTENTION — TOP DWELL</div>
+                        <ol id="dwellList">
+                            <li class="empty">Hover the page — dwell on controls appears here.</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel" data-panel="replay" role="tabpanel" hidden>
+                <div class="rp-transport">
+                    <button class="ictl big" id="rpPlay" type="button" aria-label="Play session"></button>
+                    <button class="ictl" id="rpStop" type="button" aria-label="Stop replay"><svg class="ic">
+                            <use href="#i-stop" />
+                        </svg></button>
+                    <div class="rp-speed" role="group" aria-label="Playback speed">
+                        <button type="button" data-s="0.5">×0.5</button><button type="button" data-s="1"
+                            class="on">×1</button><button type="button" data-s="2">×2</button><button type="button"
+                            data-s="4">×4</button>
+                    </div>
+                    <button class="ictl" id="rpLoop" type="button" aria-label="Loop replay" aria-pressed="false"><svg
+                            class="ic">
+                            <use href="#i-loop" />
+                        </svg></button>
+                    <div class="rp-clock"><b id="rpTime">00:00.0</b> <span>/</span> <em id="rpDur">00:00.0</em></div>
+                </div>
+                <canvas id="rpTimeline" aria-label="Session timeline — drag to seek"></canvas>
+                <p class="rp-state" id="rpState">Interact with the page first, then press play — the cursor journey
+                    replays over a dimmed page while recording is suspended. Space pauses, ← → seek, Esc exits.</p>
+            </section>
+
+            <section class="panel" data-panel="heatmap" role="tabpanel" hidden>
+                <div class="hm-row">
+                    <div class="hm-modes" role="group" aria-label="Overlay mode">
+                        <button type="button" data-m="off" class="on">OFF</button><button type="button"
+                            data-m="heat">HEAT</button><button type="button" data-m="scatter">SCATTER</button><button
+                            type="button" data-m="trail">TRAIL</button><button type="button"
+                            data-m="zones">ZONES</button>
+                    </div>
+                    <label class="hm-rad">RADIUS <input type="range" id="hmRadius" min="30" max="140" value="70"
+                            disabled> <b id="hmRadiusVal">70px</b></label>
+                    <label class="chk"><input type="checkbox" id="tgMarkers" checked> LIVE MARKERS</label>
+                    <span class="hm-stats" id="hmStats">0 clicks · 0 dead · 0 rage</span>
+                    <button class="cbtn" id="btnClearViz" type="button">CLEAR VISUALS</button>
+                </div>
+                <div class="hm-legend">
+                    <span><i class="lg-dot"></i>CLICK</span><span><i class="lg-x">×</i>DEAD</span><span><i
+                            class="lg-ring"></i>RAGE</span>
+                    <span class="lg-note">Overlays are painted in page coordinates — scroll to inspect the whole
+                        document. Radius applies to HEAT; ZONES counts clicks per 150 px cell.</span>
+                </div>
+            </section>
+
+            <section class="panel logp" data-panel="log" role="tabpanel" hidden>
+                <div class="lg-top">
+                    <div class="chips" id="feedFilters"></div>
+                    <input id="feedSearch" type="search" placeholder="Filter stream…" aria-label="Filter event stream">
+                    <button class="cbtn" id="btnFeedPause" type="button" aria-pressed="false">HOLD</button>
+                    <button class="cbtn" id="btnFeedClear" type="button">CLEAR VIEW</button>
+                </div>
+                <div id="feed" role="log" aria-live="polite"></div>
+            </section>
+
+            <section class="panel datap" data-panel="data" role="tabpanel" hidden>
+                <div class="dt-actions">
+                    <button class="dbtn" id="btnJson" type="button"><svg class="ic">
+                            <use href="#i-dl" />
+                        </svg>JSON</button>
+                    <button class="dbtn" id="btnCsv" type="button"><svg class="ic">
+                            <use href="#i-doc" />
+                        </svg>CSV</button>
+                    <button class="dbtn" id="btnCopyJson" type="button"><svg class="ic">
+                            <use href="#i-copy" />
+                        </svg>COPY JSON</button>
+                    <button class="dbtn" id="btnReport" type="button"><svg class="ic">
+                            <use href="#i-doc" />
+                        </svg>TEXT REPORT</button>
+                    <span class="dt-sep"></span>
+                    <button class="dbtn" id="btnSave" type="button"><svg class="ic">
+                            <use href="#i-save" />
+                        </svg>SAVE TO BROWSER</button>
+                    <button class="dbtn" id="btnRestore" type="button" disabled><svg class="ic">
+                            <use href="#i-restore" />
+                        </svg>RESTORE</button>
+                    <button class="dbtn danger" id="btnDelSave" type="button" disabled><svg class="ic">
+                            <use href="#i-trash" />
+                        </svg>DELETE SAVED</button>
+                    <span class="save-info" id="saveInfo">No saved copy in this browser.</span>
+                </div>
+                <div class="dt-cols">
+                    <div class="dt-env">
+                        <div class="lbl">ENVIRONMENT</div>
+                        <dl id="envRows"></dl>
+                    </div>
+                    <div class="dt-out">
+                        <div class="lbl">DATA PREVIEW</div><textarea id="dataOut" readonly spellcheck="false"
+                            placeholder="Exports land as downloads; the preview fills when you copy JSON or a report."></textarea>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </aside>
+
+    <dialog id="dlgReset" aria-labelledby="rsT">
+        <div class="dlg-in">
+            <h2 id="rsT">Reset session?</h2>
+            <p>All events, clicks, cursor samples and visuals recorded in this tab will be discarded and a new session
+                ID issued. A copy saved to this browser is not affected.</p>
+            <div class="dlg-act"><button class="cbtn dark" id="dlgCancel" type="button">KEEP RECORDING</button><button
+                    class="dbtn danger" id="dlgConfirm" type="button" style="background:var(--paper)">RESET
+                    SESSION</button></div>
+        </div>
+    </dialog>
+    <div id="toasts" aria-live="polite"></div>
+
+    <script>
+        (() => {
+            'use strict';
+            /* ---------- helpers ---------- */
+            const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
+            const E = id => document.getElementById(id);
+            const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+            const pad = n => String(n).padStart(2, '0');
+            const fmtInt = n => Math.round(n).toLocaleString('en-US');
+            const fmtClock = ms => { ms = Math.max(0, ms | 0); const s = Math.floor(ms / 1000), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return h ? h + ':' + pad(m) + ':' + pad(s % 60) : pad(m) + ':' + pad(s % 60) };
+            const fmtClockT = ms => { const s = Math.max(0, ms) / 1000; return pad(Math.floor(s / 60)) + ':' + pad(Math.floor(s % 60)) + '.' + Math.floor(s * 10 % 10) };
+            const ICON = id => `<svg class="ic" aria-hidden="true"><use href="#${id}"/></svg>`;
+
+            /* ---------- state ---------- */
+            const EV_MAX = 20000, MS_MAX = 8000, IDLE_MS = 5000;
+            const S = {
+                active: true, suspend: false, startedAt: Date.now(),
+                sid: 'NW-' + Math.random().toString(36).slice(2, 8).toUpperCase(),
+                events: [], clicks: [], mouse: [], rage: [], counts: {}, dwell: {},
+                dist: 0, maxDepth: 0, keys: 0, keyNames: {}, selCount: 0, copyCount: 0, formEvs: 0,
+                idleMs: 0, lastInput: performance.now(), firstInput: null, lastSelLen: 0,
+                funnel: { landed: 0, depth50: null, control: null, field: null, submit: null },
+                pulse: new Array(90).fill(0), pulseHead: 1,
+                replay: { mode: false, playing: false, rt: 0, speed: 1, loop: false, mi: 0, ci: 0, raf: 0, last: 0 },
+                ui: { tab: 'overview', heat: 'off', radius: 70, markers: true }
+            };
+
+            /* ---------- recording core ---------- */
+            function pulseAdd(t) { const sec = Math.floor(t / 1000) + 1; while (S.pulseHead < sec) { S.pulse.push(0); S.pulse.shift(); S.pulseHead++ } S.pulse[S.pulse.length - 1]++ }
+            function pulseAdvance() { const sec = Math.floor((Date.now() - S.startedAt) / 1000) + 1; while (S.pulseHead < sec) { S.pulse.push(0); S.pulse.shift(); S.pulseHead++ } }
+            function record(type, data = {}, opts = {}) {
+                if ((!S.active || S.suspend) && !opts.force) return null;
+                const e = Object.assign({ t: Date.now() - S.startedAt, ts: new Date().toISOString(), type }, data);
+                S.events.push(e); if (S.events.length > EV_MAX) S.events.shift();
+                S.counts[type] = (S.counts[type] || 0) + 1;
+                pulseAdd(e.t); feedAdd(e); return e;
+            }
+
+            /* ---------- event feed ---------- */
+            const GROUPS = { click: ['CLICK', 'g-click'], key: ['KEYS', 'g-key'], form: ['FORM', 'g-form'], text: ['TEXT', 'g-text'], system: ['SYSTEM', 'g-system'], scroll: ['SCROLL', 'g-scroll'] };
+            const TYPE_GROUP = { click: 'click', rage_click: 'click', key: 'key', field_focus: 'form', field_blur: 'form', field_change: 'form', form_submit: 'form', selection: 'text', copy: 'text', dwell: 'system', visibility: 'system', resize: 'system', notice: 'system', session: 'system', replay: 'system', scroll: 'scroll' };
+            let feedOn = { click: true, key: true, form: true, text: true, system: true, scroll: false }, feedQ = '', feedPaused = false;
+            function feedDetail(e) {
+                switch (e.type) {
+                    case 'click': return e.label + (e.dead ? ' — dead click' : '') + (e.rage ? ' — rage' : '');
+                    case 'rage_click': return e.n + ' rapid clicks — ' + e.label;
+                    case 'key': return e.category + (e.key ? ' (' + e.key + ')' : '');
+                    case 'selection': return e.chars + ' characters selected';
+                    case 'copy': return e.chars + ' characters copied';
+                    case 'field_focus': return 'focus → ' + e.field;
+                    case 'field_blur': return 'blur ← ' + e.field;
+                    case 'field_change': return e.field + ' changed';
+                    case 'form_submit': return 'dispatch ' + (e.valid ? 'subscribed' : 'rejected');
+                    case 'dwell': return (e.ms / 1000).toFixed(1) + ' s on ' + e.label;
+                    case 'visibility': return 'tab ' + e.state;
+                    case 'resize': return 'viewport ' + e.w + '×' + e.h;
+                    case 'scroll': return 'depth ' + e.depth + '% · ' + e.y + ' px';
+                    default: return e.message || ''
+                }
+            }
+            function feedRow(e) {
+                const g = TYPE_GROUP[e.type] || 'system'; const d = document.createElement('div'); d.className = 'frow';
+                d.innerHTML = `<span class="ft">${fmtClock(e.t)}</span><span class="tag ${GROUPS[g][1]}">${GROUPS[g][0]}</span><span class="fd"></span>`;
+                d.lastElementChild.textContent = feedDetail(e); return d
+            }
+            function feedMatch(e) { const g = TYPE_GROUP[e.type] || 'system'; return feedOn[g] && (!feedQ || feedDetail(e).toLowerCase().includes(feedQ) || e.type.includes(feedQ)) }
+            function feedAdd(e) {
+                if (!feedMatch(e)) return; const f = E('feed'); f.append(feedRow(e));
+                while (f.children.length > 400) f.firstElementChild.remove();
+                if (!feedPaused) f.scrollTop = f.scrollHeight
+            }
+            function rebuildFeed() {
+                const f = E('feed'); f.replaceChildren();
+                S.events.filter(feedMatch).slice(-400).forEach(e => f.append(feedRow(e))); f.scrollTop = f.scrollHeight
+            }
+            function buildChips() {
+                const box = E('feedFilters'); box.replaceChildren();
+                Object.entries(GROUPS).forEach(([g, [lbl]]) => {
+                    const b = document.createElement('button'); b.type = 'button';
+                    b.className = 'chip' + (feedOn[g] ? ' on' : ''); b.dataset.g = g; b.innerHTML = lbl + '<b></b>';
+                    b.onclick = () => { feedOn[g] = !feedOn[g]; b.classList.toggle('on', feedOn[g]); rebuildFeed(); updateChips() };
+                    box.append(b)
+                }); updateChips()
+            }
+            function updateChips() {
+                $$('#feedFilters .chip').forEach(ch => {
+                    const g = ch.dataset.g;
+                    const n = Object.entries(TYPE_GROUP).filter(([, gg]) => gg === g).reduce((a, [t]) => a + (S.counts[t] || 0), 0);
+                    ch.querySelector('b').textContent = fmtInt(n)
+                })
+            }
+
+            /* ---------- element labelling ---------- */
+            function label(el) {
+                if (!el || !el.tagName) return 'unknown'; let s = el.tagName.toLowerCase();
+                if (el.id) s += '#' + el.id; else if (typeof el.className === 'string' && el.className.trim()) s += '.' + el.className.trim().split(/\s+/)[0];
+                const txt = (el.innerText || el.getAttribute('aria-label') || '').trim().replace(/\s+/g, ' ');
+                if (txt) s += ' “' + (txt.length > 26 ? txt.slice(0, 26) + '…' : txt) + '”'; return s
+            }
+
+            /* ---------- site trackers ---------- */
+            const IGN = '#console,#toasts,dialog', INTER = 'a,button,input,select,textarea,label,summary,details,[role=button],[contenteditable]';
+            const ign = e => e.target.closest && !!e.target.closest(IGN);
+
+            document.addEventListener('click', e => {
+                if (ign(e) || S.suspend) return;
+                const el = e.target, dead = !el.closest(INTER), t = Date.now() - S.startedAt;
+                const c = { x: e.pageX, y: e.pageY, cx: e.clientX, cy: e.clientY };
+                S.rage = S.rage.filter(r => t - r.t < 700 && Math.hypot(r.x - c.x, r.y - c.y) < 60);
+                const rage = S.rage.length >= 2; S.rage.push({ t, ...c }); if (S.rage.length > 30) S.rage.shift();
+                const click = { n: S.clicks.length + 1, t, ...c, label: label(el), dead, rage };
+                S.clicks.push(click);
+                record('click', { ...c, label: click.label, dead, rage, clickNumber: click.n });
+                if (rage && !S._rageFlag) {
+                    S._rageFlag = true; record('rage_click', { n: S.rage.length, label: click.label }, { force: true });
+                    toast('Rage-click burst detected — ' + click.label, 'warn'); setTimeout(() => S._rageFlag = false, 900)
+                }
+                if (!dead && S.funnel.control == null) S.funnel.control = t;
+                if (S.firstInput == null) S.firstInput = t;
+                addMarker(click);
+                if (['heat', 'scatter', 'zones'].includes(S.ui.heat)) scheduleOverlay();
+            });
+
+            let _ms = 0, _mp = null;
+            document.addEventListener('mousemove', e => {
+                if (ign(e) || !S.active || S.suspend) return;
+                const now = performance.now(); if (now - _ms < 50) return; _ms = now;
+                const p = { t: Date.now() - S.startedAt, x: e.pageX, y: e.pageY, cx: e.clientX, cy: e.clientY };
+                if (_mp) S.dist += Math.hypot(p.x - _mp.x, p.y - _mp.y); _mp = p;
+                S.mouse.push(p); if (S.mouse.length > MS_MAX) S.mouse.shift();
+                if (S.firstInput == null) S.firstInput = p.t;
+            }, { passive: true });
+
+            let _sc = 0;
+            window.addEventListener('scroll', () => {
+                if (!S.active || S.suspend) return;
+                const doc = document.documentElement, y = Math.round(scrollY);
+                const depth = Math.min(100, Math.round((y + innerHeight) / Math.max(1, doc.scrollHeight) * 100));
+                S.maxDepth = Math.max(S.maxDepth, depth);
+                if (S.funnel.depth50 == null && depth >= 50) S.funnel.depth50 = Date.now() - S.startedAt;
+                const now = performance.now(); if (now - _sc < 150) return; _sc = now;
+                record('scroll', { y, depth });
+            }, { passive: true });
+
+            const NAVK = new Set(['Enter', 'Tab', 'Escape', 'Backspace', 'Delete', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown', 'Space', 'Insert', 'ContextMenu']);
+            const MODK = new Set(['Shift', 'Control', 'Alt', 'Meta', 'AltGraph', 'CapsLock', 'NumLock']);
+            document.addEventListener('keydown', e => {
+                if (ign(e) || !S.active || S.suspend) return;
+                let cat = 'character', key = null;
+                if (MODK.has(e.key)) cat = 'modifier';
+                else if (NAVK.has(e.key) || /^F\d{1,2}$/.test(e.key) || e.key.length > 1) { cat = 'key'; key = e.key }
+                S.keys++; if (key) S.keyNames[key] = (S.keyNames[key] || 0) + 1;
+                record('key', { category: cat, key });
+                if (S.firstInput == null) S.firstInput = Date.now() - S.startedAt;
+            });
+
+            let _selTo = 0;
+            document.addEventListener('selectionchange', () => {
+                if (!S.active || S.suspend) return; clearTimeout(_selTo);
+                _selTo = setTimeout(() => {
+                    const len = String(getSelection()).length;
+                    if (len > 0 && len !== S.lastSelLen) { S.lastSelLen = len; S.selCount++; record('selection', { chars: len }) }
+                    else if (len === 0) S.lastSelLen = 0
+                }, 250)
+            });
+            document.addEventListener('copy', e => {
+                if (ign(e) || !S.active || S.suspend) return;
+                const len = String(getSelection()).length;
+                if (len > 0) { S.copyCount++; record('copy', { chars: len }) }
+            });
+
+            document.addEventListener('visibilitychange', () => record('visibility', { state: document.visibilityState }));
+            let _rz = 0;
+            window.addEventListener('resize', () => {
+                clearTimeout(_rz); _rz = setTimeout(() => {
+                    record('resize', { w: innerWidth, h: innerHeight }); syncLayer(); renderEnv(); drawPulse(); drawTimeline()
+                }, 300)
+            });
+
+            const fieldName = f => f.name || f.id || f.tagName.toLowerCase();
+            document.addEventListener('focusin', e => {
+                if (ign(e) || !S.active || S.suspend) return;
+                const f = e.target; if (!f.matches || !f.matches('input,textarea,select')) return;
+                record('field_focus', { field: fieldName(f) });
+                if (S.funnel.field == null) S.funnel.field = Date.now() - S.startedAt
+            });
+            document.addEventListener('focusout', e => {
+                if (ign(e) || !S.active || S.suspend) return;
+                const f = e.target; if (!f.matches || !f.matches('input,textarea,select')) return;
+                record('field_blur', { field: fieldName(f) })
+            });
+            document.addEventListener('change', e => {
+                if (ign(e) || !S.active || S.suspend) return;
+                const f = e.target; if (f.matches && f.matches('input,textarea,select')) { S.formEvs++; record('field_change', { field: fieldName(f) }) }
+            });
+
+            /* dwell time on interactive elements */
+            let _dw = null;
+            function endDwell() {
+                if (!_dw) return; const ms = performance.now() - _dw.t, L = _dw.label; _dw = null;
+                if (ms >= 400) { S.dwell[L] = (S.dwell[L] || 0) + Math.round(ms); record('dwell', { label: L, ms: Math.round(ms) }) }
+            }
+            document.addEventListener('mouseover', e => {
+                if (ign(e) || !S.active || S.suspend) return;
+                const el = e.target.closest ? e.target.closest(INTER) : null;
+                if (_dw && _dw.el === el) return; endDwell();
+                if (el) _dw = { el, label: label(el), t: performance.now() }
+            });
+            document.addEventListener('mouseout', e => { if (!e.relatedTarget) endDwell() });
+
+            /* idle / active split */
+            function markInput() {
+                const now = performance.now(), gap = now - S.lastInput;
+                if (gap > IDLE_MS) S.idleMs += gap; S.lastInput = now
+            }
+            ['pointerdown', 'pointermove', 'keydown', 'wheel', 'touchstart'].forEach(ev => window.addEventListener(ev, markInput, { passive: true }));
+
+            /* ---------- live click markers ---------- */
+            function addMarker(c) {
+                if (!S.ui.markers) return; const m = document.createElement('div');
+                m.className = 'mk' + (c.dead ? ' dead' : ''); m.textContent = c.n; m.title = c.label;
+                m.style.left = c.x + 'px'; m.style.top = c.y + 'px'; E('markers').append(m);
+                while (E('markers').children.length > 250) E('markers').firstElementChild.remove()
+            }
+
+            /* ---------- canvas overlay: heat / scatter / trail / zones ---------- */
+            const ovl = E('overlayCanvas'), octx = ovl.getContext('2d'); let _ovlTo = 0;
+            function scheduleOverlay() { clearTimeout(_ovlTo); _ovlTo = setTimeout(renderOverlay, 500) }
+            function syncLayer() {
+                const w = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth);
+                const h = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
+                ovl.width = w; ovl.height = h; ovl.style.width = w + 'px'; ovl.style.height = h + 'px';
+                const mk = E('markers'); mk.style.width = w + 'px'; mk.style.height = h + 'px';
+                renderOverlay()
+            }
+            const STOPS = [[0, [0, 0, 0, 0]], [.30, [206, 140, 26, 80]], [.55, [214, 84, 26, 165]], [.75, [168, 30, 14, 225]], [.92, [255, 238, 214, 255]], [1, [255, 255, 250, 255]]];
+            const LUT = new Array(256);
+            for (let i = 0; i < 256; i++) {
+                const p = i / 255; let a = STOPS[0], b = STOPS[STOPS.length - 1];
+                for (let s = 0; s < STOPS.length - 1; s++)if (p >= STOPS[s][0] && p <= STOPS[s + 1][0]) { a = STOPS[s]; b = STOPS[s + 1]; break }
+                const f = (p - a[0]) / Math.max(1e-6, b[0] - a[0]); LUT[i] = [0, 1, 2, 3].map(k => Math.round(a[1][k] + (b[1][k] - a[1][k]) * f))
+            }
+            function renderOverlay() {
+                octx.clearRect(0, 0, ovl.width, ovl.height);
+                const m = S.ui.heat;
+                if (m === 'heat') renderHeat(); else if (m === 'scatter') renderScatter();
+                else if (m === 'trail') renderTrail(); else if (m === 'zones') renderZones();
+                E('hmStats').textContent = `${fmtInt(S.clicks.length)} clicks · ${fmtInt(S.clicks.filter(c => c.dead).length)} dead · ${fmtInt(S.clicks.filter(c => c.rage).length)} rage`
+            }
+            function renderHeat() {
+                const w = ovl.width, h = ovl.height; if (!S.clicks.length || !w) return;
+                const sc = .22, ow = Math.max(2, Math.round(w * sc)), oh = Math.max(2, Math.round(h * sc));
+                const off = document.createElement('canvas'); off.width = ow; off.height = oh;
+                const c2 = off.getContext('2d'); const r = Math.max(6, S.ui.radius * sc);
+                for (const c of S.clicks) {
+                    const g = c2.createRadialGradient(c.x * sc, c.y * sc, 0, c.x * sc, c.y * sc, r);
+                    g.addColorStop(0, 'rgba(20,18,15,.5)'); g.addColorStop(1, 'rgba(20,18,15,0)');
+                    c2.fillStyle = g; c2.beginPath(); c2.arc(c.x * sc, c.y * sc, r, 0, 7); c2.fill()
+                }
+                const im = c2.getImageData(0, 0, ow, oh), d = im.data;
+                for (let i = 0; i < d.length; i += 4) {
+                    const a = d[i + 3];
+                    if (a < 8) { d[i + 3] = 0; continue } const l = LUT[a]; d[i] = l[0]; d[i + 1] = l[1]; d[i + 2] = l[2]; d[i + 3] = l[3]
+                }
+                c2.putImageData(im, 0, 0);
+                octx.imageSmoothingEnabled = true; octx.drawImage(off, 0, 0, w, h)
+            }
+            function renderScatter() {
+                for (const c of S.clicks) {
+                    if (c.dead) {
+                        octx.strokeStyle = 'rgba(201,147,38,.95)'; octx.lineWidth = 2.5; const s = 7;
+                        octx.beginPath(); octx.moveTo(c.x - s, c.y - s); octx.lineTo(c.x + s, c.y + s);
+                        octx.moveTo(c.x + s, c.y - s); octx.lineTo(c.x - s, c.y + s); octx.stroke()
+                    }
+                    else {
+                        octx.fillStyle = c.rage ? '#8f1d0b' : 'rgba(195,61,27,.92)';
+                        octx.beginPath(); octx.arc(c.x, c.y, c.rage ? 7 : 4.5, 0, 7); octx.fill();
+                        octx.strokeStyle = '#fff'; octx.lineWidth = 1.5; octx.stroke()
+                    }
+                }
+            }
+            function renderTrail() {
+                const pts = S.mouse; if (pts.length < 2) return;
+                octx.lineWidth = 2; octx.lineCap = 'round'; const B = 14;
+                for (let b = 0; b < B; b++) {
+                    const i0 = Math.floor(pts.length * b / B), i1 = Math.min(pts.length - 1, Math.floor(pts.length * (b + 1) / B));
+                    octx.strokeStyle = `rgba(201,147,38,${.08 + .4 * ((b + 1) / B)})`; octx.beginPath();
+                    octx.moveTo(pts[i0].x, pts[i0].y); for (let i = i0 + 1; i <= i1; i++)octx.lineTo(pts[i].x, pts[i].y); octx.stroke()
+                }
+                const dot = (p, f) => {
+                    octx.fillStyle = f; octx.beginPath(); octx.arc(p.x, p.y, 5, 0, 7); octx.fill();
+                    octx.strokeStyle = '#f2ecdf'; octx.lineWidth = 2; octx.stroke()
+                };
+                dot(pts[0], '#191611'); dot(pts[pts.length - 1], 'rgba(195,61,27,1)')
+            }
+            function renderZones() {
+                const cell = 150, cols = Math.max(1, Math.ceil(ovl.width / cell)), rows = Math.max(1, Math.ceil(ovl.height / cell));
+                const cnt = new Map();
+                for (const c of S.clicks) { const k = Math.floor(c.y / cell) * cols + Math.floor(c.x / cell); cnt.set(k, (cnt.get(k) || 0) + 1) }
+                const mx = Math.max(1, ...cnt.values());
+                octx.strokeStyle = 'rgba(25,22,17,.07)'; octx.lineWidth = 1;
+                for (let i = 0; i <= cols; i++) { octx.beginPath(); octx.moveTo(i * cell, 0); octx.lineTo(i * cell, rows * cell); octx.stroke() }
+                for (let j = 0; j <= rows; j++) { octx.beginPath(); octx.moveTo(0, j * cell); octx.lineTo(cols * cell, j * cell); octx.stroke() }
+                octx.font = '11px "IBM Plex Mono",monospace';
+                for (const [k, n] of cnt) {
+                    const x = (k % cols) * cell, y = Math.floor(k / cols) * cell;
+                    octx.fillStyle = `rgba(195,61,27,${.12 + .55 * n / mx})`; octx.fillRect(x + 1, y + 1, cell - 2, cell - 2);
+                    octx.fillStyle = 'rgba(25,22,17,.85)'; octx.fillText(n, x + 6, y + 16)
+                }
+            }
+
+            /* ---------- console: header / tabs / resize ---------- */
+            function updateRec() {
+                const dot = E('recDot'); dot.className = 'rec';
+                if (S.suspend) { dot.classList.add('suspend'); E('recTxt').textContent = 'REPLAY' }
+                else if (S.active) { E('recTxt').textContent = 'REC' }
+                else { dot.classList.add('paused'); E('recTxt').textContent = 'PAUSED' }
+                E('btnPause').innerHTML = ICON(S.active ? 'i-pause' : 'i-play')
+            }
+            function updateHeader() {
+                E('hdrTime').textContent = fmtClock(Date.now() - S.startedAt);
+                E('hdrClk').textContent = fmtInt(S.clicks.length);
+                E('hdrCur').textContent = fmtInt(S.mouse.length);
+                E('hdrDep').textContent = S.maxDepth + '%';
+                E('hdrEvt').textContent = fmtInt(S.events.length + S.mouse.length)
+            }
+            function selectTab(t) {
+                S.ui.tab = t;
+                $$('.tabBtn').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
+                $$('.panel').forEach(p => p.hidden = p.dataset.panel !== t);
+                if (t === 'overview') { renderOverview(); drawPulse() }
+                if (t === 'replay') drawTimeline();
+                if (t === 'heatmap') renderOverlay();
+                if (t === 'data') renderEnv();
+                saveUI()
+            }
+            $$('.tabBtn').forEach(b => b.addEventListener('click', () => selectTab(b.dataset.tab)));
+            E('btnPause').onclick = () => {
+                if (S.suspend) return;
+                if (S.active) { record('session', { message: 'recording paused' }, { force: true }); S.active = false }
+                else { S.active = true; record('session', { message: 'recording resumed' }, { force: true }) }
+                updateRec()
+            };
+            E('btnCollapse').onclick = () => { document.body.classList.toggle('cmin'); saveUI() };
+            const rz = E('cResize'); let dragging = false;
+            rz.addEventListener('pointerdown', e => {
+                if (document.body.classList.contains('cmin')) return;
+                dragging = true; rz.setPointerCapture(e.pointerId); document.body.classList.add('dragging')
+            });
+            rz.addEventListener('pointermove', e => {
+                if (!dragging) return;
+                const h = clamp(innerHeight - e.clientY, 220, Math.round(innerHeight * .8));
+                document.documentElement.style.setProperty('--ch', h + 'px'); S.ui.h = h; syncLayer()
+            });
+            rz.addEventListener('pointerup', () => {
+                if (!dragging) return; dragging = false;
+                document.body.classList.remove('dragging'); saveUI(); drawPulse(); drawTimeline()
+            });
+
+            /* reset flow (native dialog, no confirm()) */
+            E('btnResetTop').onclick = () => E('dlgReset').showModal();
+            E('dlgCancel').onclick = () => E('dlgReset').close();
+            E('dlgConfirm').onclick = () => { E('dlgReset').close(); doReset() };
+            function newSid() { S.sid = 'NW-' + Math.random().toString(36).slice(2, 8).toUpperCase(); E('hdrSid').textContent = S.sid }
+            function doReset() {
+                rpEnd();
+                Object.assign(S, {
+                    events: [], clicks: [], mouse: [], rage: [], counts: {}, dwell: {}, dist: 0, maxDepth: 0, keys: 0,
+                    keyNames: {}, selCount: 0, copyCount: 0, formEvs: 0, idleMs: 0, firstInput: null, lastSelLen: 0, _rageFlag: false,
+                    startedAt: Date.now(), pulse: new Array(90).fill(0), pulseHead: 1,
+                    funnel: { landed: 0, depth50: null, control: null, field: null, submit: null }
+                });
+                Object.assign(S.replay, { rt: 0, mi: 0, ci: 0 }); newSid();
+                E('markers').replaceChildren(); octx.clearRect(0, 0, ovl.width, ovl.height);
+                record('session', { message: 'session reset — new session ' + S.sid }, { force: true });
+                rebuildFeed(); renderOverview(); updateHeader(); updateRec(); updateChips(); drawPulse(); drawTimeline();
+                toast('Session reset. A new session ID was issued.')
+            }
+
+            /* ---------- overview panel ---------- */
+            function engComp() {
+                return [
+                    ['CLICKS', Math.min(30, S.clicks.length * 3), 30],
+                    ['SCROLL', Math.min(20, S.maxDepth * .2), 20],
+                    ['CURSOR', Math.min(20, S.dist / 1000), 20],
+                    ['KEYS', Math.min(15, S.keys * 1.5), 15],
+                    ['FORM', Math.min(15, S.formEvs * 3), 15]]
+            }
+            const FUN = [['landed', 'LANDED'], ['depth50', 'SCROLLED 50%'], ['control', 'USED A CONTROL'], ['field', 'FOCUSED A FIELD'], ['submit', 'SUBMITTED']];
+            function renderOverview() {
+                const comp = engComp(), total = Math.round(comp.reduce((a, c) => a + c[1], 0));
+                E('ovEng').textContent = total;
+                const segs = E('ovSegs');
+                if (!segs.children.length) for (let i = 0; i < 20; i++)segs.append(document.createElement('i'));
+                [...segs.children].forEach((s, i) => s.classList.toggle('on', i < Math.round(total / 5)));
+                const box = E('ovComp');
+                if (box.children.length !== comp.length) {
+                    box.replaceChildren();
+                    comp.forEach(() => {
+                        const r = document.createElement('div'); r.className = 'cr';
+                        r.innerHTML = '<span></span><i><b></b></i><em></em>'; box.append(r)
+                    })
+                }
+                comp.forEach((c, i) => {
+                    const r = box.children[i]; r.children[0].textContent = c[0];
+                    r.querySelector('b').style.width = (c[1] / c[2] * 100) + '%';
+                    r.children[2].textContent = Math.round(c[1]) + '/' + c[2]
+                });
+                const el = Date.now() - S.startedAt, idle = Math.min(S.idleMs, el), act = el - idle;
+                E('aiActive').style.width = (act / Math.max(1, el) * 100) + '%';
+                E('aiIdle').style.width = (idle / Math.max(1, el) * 100) + '%';
+                E('aiTxt').textContent = 'ACTIVE ' + fmtClock(act) + ' · IDLE ' + fmtClock(idle);
+                const dead = S.clicks.filter(c => c.dead).length, rg = S.clicks.filter(c => c.rage).length;
+                E('roClicks').textContent = fmtInt(S.clicks.length);
+                E('roClicksSub').textContent = dead + ' dead · ' + rg + ' rage';
+                E('roCursor').textContent = fmtInt(S.dist);
+                E('roCursorSub').textContent = '≈ ' + (S.dist * .0254 / 96).toFixed(1) + ' m · ' + fmtInt(act > 1000 ? S.dist / (act / 1000) : 0) + ' px/s';
+                E('roDepth').textContent = S.maxDepth + '%'; E('roDepthBar').style.width = S.maxDepth + '%';
+                E('roKeys').textContent = fmtInt(S.keys);
+                const kn = Object.entries(S.keyNames).sort((a, b) => b[1] - a[1]).slice(0, 2);
+                E('roKeysSub').textContent = kn.length ? kn.map(k => k[0] + ' ×' + k[1]).join(' · ') : '—';
+                E('roText').textContent = fmtInt(S.selCount); E('roTextSub').textContent = 'copies ' + fmtInt(S.copyCount);
+                E('roFirst').textContent = S.firstInput != null ? (S.firstInput / 1000).toFixed(1) + 's' : '—';
+                renderFunnel(); renderDwell(); updateHeader(); updateChips()
+            }
+            function renderFunnel() {
+                const ol = E('funnel');
+                if (!ol.children.length) ol.replaceChildren(...FUN.map((f, i) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<i class="sq"></i><div><b>0${i + 1} · ${f[1]}</b><span>pending</span></div>`; return li
+                }));
+                FUN.forEach((f, i) => {
+                    const li = ol.children[i], v = S.funnel[f[0]];
+                    li.classList.toggle('done', v != null);
+                    li.querySelector('span').textContent = v != null ? fmtClock(v) : 'pending'
+                })
+            }
+            function renderDwell() {
+                const ol = E('dwellList');
+                const rows = Object.entries(S.dwell).sort((a, b) => b[1] - a[1]).slice(0, 5);
+                if (!rows.length) { ol.innerHTML = '<li class="empty">Hover the page — dwell on controls appears here.</li>'; return }
+                const mx = rows[0][1];
+                ol.replaceChildren(...rows.map(r => {
+                    const li = document.createElement('li');
+                    li.innerHTML = '<span class="dl"></span><i><b></b></i><em></em>';
+                    li.querySelector('.dl').textContent = r[0];
+                    li.querySelector('b').style.width = (r[1] / mx * 100) + '%';
+                    li.querySelector('em').textContent = (r[1] / 1000).toFixed(1) + 's'; return li
+                }))
+            }
+            function drawPulse() {
+                if (S.ui.tab !== 'overview') return;
+                const c = E('ovPulse'), w = c.clientWidth, h = c.clientHeight; if (!w) return;
+                const dpr = Math.min(2, devicePixelRatio || 1); c.width = w * dpr; c.height = h * dpr;
+                const x = c.getContext('2d'); x.scale(dpr, dpr);
+                x.strokeStyle = '#2c2820'; x.lineWidth = 1;
+                for (let i = 1; i < 4; i++) { x.beginPath(); x.moveTo(0, h * i / 4); x.lineTo(w, h * i / 4); x.stroke() }
+                const vals = S.pulse, mx = Math.max(8, ...vals), bw = w / vals.length;
+                vals.forEach((v, i) => {
+                    const bh = v ? Math.max(2, v / mx * (h - 6)) : 0;
+                    x.fillStyle = i === vals.length - 1 ? '#e6b437' : 'rgba(217,148,13,.5)';
+                    x.fillRect(i * bw, h - bh, Math.max(1, bw - 1.2), bh)
+                });
+                E('pulseNow').textContent = (vals.slice(-5).reduce((a, b) => a + b, 0) / 5).toFixed(1) + '/s'
+            }
+
+            /* ---------- replay engine ---------- */
+            const RP = S.replay, tl = E('rpTimeline'), tctx = tl.getContext('2d');
+            function rpDur() {
+                RP.dur = Math.max(600,
+                    (S.mouse.length ? S.mouse[S.mouse.length - 1].t : 0),
+                    (S.clicks.length ? S.clicks[S.clicks.length - 1].t : 0),
+                    (S.events.length ? S.events[S.events.length - 1].t : 0)); return RP.dur
+            }
+            function setPlayIcon() { E('rpPlay').innerHTML = ICON(RP.playing ? 'i-pause' : 'i-play') }
+            function rpStart() {
+                record('replay', { message: 'replay started — recording suspended' }, { force: true });
+                S.suspend = true; updateRec();
+                document.body.classList.add('replaying');
+                document.documentElement.style.scrollBehavior = 'auto';
+                E('ghost').hidden = false; E('replayDim').style.display = 'block'
+            }
+            function rpEnd() {
+                if (RP.raf) cancelAnimationFrame(RP.raf); RP.raf = 0; RP.playing = false; RP.mode = false;
+                if (S.suspend) { S.suspend = false; record('replay', { message: 'replay ended — recording resumed' }, { force: true }) }
+                updateRec(); document.body.classList.remove('replaying');
+                document.documentElement.style.scrollBehavior = '';
+                E('ghost').hidden = true; E('replayDim').style.display = 'none';
+                setPlayIcon(); drawTimeline()
+            }
+            function rpPlay() {
+                if (!S.mouse.length && !S.clicks.length) { toast('Not enough data yet — move and click on the page first.', 'warn'); return }
+                if (!RP.mode) { rpStart(); RP.mode = true; RP.rt = 0; RP.mi = 0; RP.ci = 0 }
+                else if (RP.rt >= rpDur() - 30) { RP.rt = 0; RP.mi = 0; RP.ci = 0 }
+                RP.playing = true; RP.last = performance.now(); setPlayIcon();
+                if (!RP.raf) RP.raf = requestAnimationFrame(rpFrame)
+            }
+            function rpPause() { RP.playing = false; setPlayIcon() }
+            function rpFrame(now) {
+                RP.raf = 0;
+                if (RP.playing) RP.rt += (now - RP.last) * RP.speed;
+                RP.last = now;
+                const dur = rpDur();
+                if (RP.rt >= dur) { if (RP.loop) { RP.rt = 0; RP.mi = 0; RP.ci = 0 } else { RP.rt = dur; rpPause() } }
+                rpApply(false); drawTimeline();
+                if (RP.playing) RP.raf = requestAnimationFrame(rpFrame)
+            }
+            function rpApply(seek) {
+                const pts = S.mouse; let gx = null, gy = null;
+                if (pts.length) {
+                    while (RP.mi < pts.length - 1 && pts[RP.mi + 1].t <= RP.rt) RP.mi++;
+                    if (seek) { RP.mi = 0; while (RP.mi < pts.length - 1 && pts[RP.mi + 1].t <= RP.rt) RP.mi++ }
+                    const p = pts[RP.mi], q = pts[Math.min(pts.length - 1, RP.mi + 1)];
+                    const f = q.t > p.t ? clamp((RP.rt - p.t) / (q.t - p.t), 0, 1) : 0;
+                    gx = p.x + (q.x - p.x) * f; gy = p.y + (q.y - p.y) * f
+                }
+                else if (S.clicks.length) {
+                    let c = S.clicks[0];
+                    for (const cc of S.clicks) { if (cc.t <= RP.rt) c = cc; else break } gx = c.x; gy = c.y
+                }
+                if (gx != null) {
+                    const g = E('ghost');
+                    g.style.transform = `translate(${gx}px,${gy}px)`;
+                    g.querySelector('.glabel').textContent = fmtClockT(RP.rt);
+                    const vh = innerHeight, sy = scrollY;
+                    if (gy < sy + 70 || gy > sy + vh - 150) window.scrollTo(0, Math.max(0, gy - vh * .45))
+                }
+                while (RP.ci < S.clicks.length && S.clicks[RP.ci].t <= RP.rt) {
+                    const c = S.clicks[RP.ci++];
+                    if (!seek) {
+                        const r = document.createElement('i'); r.className = 'ripple';
+                        r.style.left = c.x + 'px'; r.style.top = c.y + 'px'; document.body.append(r);
+                        setTimeout(() => r.remove(), 700);
+                        E('ghost').classList.remove('flash'); void E('ghost').offsetWidth; E('ghost').classList.add('flash')
+                    }
+                }
+                E('rpTime').textContent = fmtClockT(RP.rt); E('rpDur').textContent = fmtClockT(rpDur());
+                E('rpState').textContent = RP.playing ? 'Replaying at ×' + RP.speed + ' — recording suspended. Space pauses, ← → seek, Esc exits.'
+                    : 'Paused at ' + fmtClockT(RP.rt) + ' — press play to continue, stop to exit.'
+            }
+            function rpSeek(t) { RP.rt = clamp(t, 0, rpDur()); rpApply(true); drawTimeline() }
+            let TL = { key: '', dur: 0, arr: null, B: 0 };
+            function tlData(dur) {
+                const key = S.mouse.length + ':' + S.clicks.length + ':' + (S.counts.scroll || 0);
+                if (TL.key !== key || TL.dur !== dur) {
+                    const B = Math.max(40, Math.min(280, Math.round(dur / 400)));
+                    const arr = new Array(B).fill(0); const put = t => arr[Math.min(B - 1, Math.floor(t / dur * B))]++;
+                    S.mouse.forEach(p => put(p.t)); S.clicks.forEach(c => { put(c.t); put(c.t) });
+                    for (const e of S.events) if (e.type === 'scroll') put(e.t);
+                    TL = { key, dur, B, arr }
+                }
+                return TL
+            }
+            function drawTimeline() {
+                if (S.ui.tab !== 'replay') return;
+                const w = tl.clientWidth, h = tl.clientHeight; if (!w) return;
+                const dpr = Math.min(2, devicePixelRatio || 1); tl.width = w * dpr; tl.height = h * dpr;
+                tctx.scale(dpr, dpr); tctx.clearRect(0, 0, w, h);
+                const dur = rpDur(), { arr, B } = tlData(dur), mx = Math.max(4, ...arr), bh = h - 16;
+                arr.forEach((v, i) => {
+                    if (!v) return; tctx.fillStyle = 'rgba(154,145,124,.45)';
+                    tctx.fillRect(i / B * w, bh - v / mx * bh, Math.max(1, w / B - 1), v / mx * bh)
+                });
+                tctx.fillStyle = '#332e22'; tctx.fillRect(0, bh, w, 1);
+                tctx.fillStyle = '#ff7a52';
+                S.clicks.forEach(c => tctx.fillRect(c.t / dur * w, 0, 2, 9));
+                tctx.fillStyle = '#8f8875'; tctx.font = '9px "IBM Plex Mono",monospace';
+                tctx.fillText('0:00', 2, h - 3);
+                const dl = fmtClock(dur); tctx.fillText(dl, w - tctx.measureText(dl).width - 2, h - 3);
+                const px = RP.rt / dur * w;
+                tctx.fillStyle = '#ff7a52'; tctx.fillRect(px - 1, 0, 2, h);
+                tctx.beginPath(); tctx.moveTo(px - 4, 0); tctx.lineTo(px + 4, 0); tctx.lineTo(px, 6); tctx.closePath(); tctx.fill()
+            }
+            E('rpPlay').onclick = () => RP.playing ? rpPause() : rpPlay();
+            E('rpStop').onclick = () => rpEnd();
+            $$('.rp-speed button').forEach(b => b.onclick = () => {
+                RP.speed = +b.dataset.s;
+                $$('.rp-speed button').forEach(x => x.classList.toggle('on', x === b));
+                if (RP.mode) E('rpState').textContent = 'Speed ×' + RP.speed + '.'
+            });
+            E('rpLoop').onclick = () => {
+                RP.loop = !RP.loop; E('rpLoop').classList.toggle('on', RP.loop);
+                E('rpLoop').setAttribute('aria-pressed', String(RP.loop))
+            };
+            let _scrub = false;
+            tl.addEventListener('pointerdown', e => { _scrub = true; tl.setPointerCapture(e.pointerId); tlSeek(e) });
+            tl.addEventListener('pointermove', e => { if (_scrub) tlSeek(e) });
+            tl.addEventListener('pointerup', () => _scrub = false);
+            function tlSeek(e) { const r = tl.getBoundingClientRect(); rpSeek((e.clientX - r.left) / r.width * rpDur()) }
+            document.addEventListener('keydown', e => {
+                if (S.suspend && e.key === 'Escape') { rpEnd(); return }
+                if (e.key === 'Tab' || e.target !== document.body) return;
+                if (S.ui.tab === 'replay' && S.suspend) {
+                    if (e.key === ' ') { e.preventDefault(); RP.playing ? rpPause() : rpPlay() }
+                    if (e.key === 'ArrowRight') { e.preventDefault(); rpSeek(RP.rt + 5000) }
+                    if (e.key === 'ArrowLeft') { e.preventDefault(); rpSeek(RP.rt - 5000) }
+                }
+            });
+
+            /* ---------- heatmap panel controls ---------- */
+            $$('.hm-modes button').forEach(b => b.onclick = () => {
+                S.ui.heat = b.dataset.m;
+                $$('.hm-modes button').forEach(x => x.classList.toggle('on', x === b));
+                E('hmRadius').disabled = S.ui.heat !== 'heat'; renderOverlay()
+            });
+            E('hmRadius').oninput = e => {
+                S.ui.radius = +e.target.value;
+                E('hmRadiusVal').textContent = S.ui.radius + 'px';
+                clearTimeout(_ovlTo); _ovlTo = setTimeout(renderOverlay, 150)
+            };
+            E('tgMarkers').onchange = e => {
+                S.ui.markers = e.target.checked;
+                document.body.classList.toggle('mk-on', S.ui.markers)
+            };
+            E('btnClearViz').onclick = () => {
+                octx.clearRect(0, 0, ovl.width, ovl.height);
+                S.ui.heat = 'off'; $$('.hm-modes button').forEach(x => x.classList.toggle('on', x.dataset.m === 'off'));
+                E('hmRadius').disabled = true; E('markers').replaceChildren(); toast('Visuals cleared.')
+            };
+
+            /* ---------- log panel controls ---------- */
+            E('feedSearch').oninput = e => { feedQ = e.target.value.trim().toLowerCase(); rebuildFeed() };
+            E('btnFeedPause').onclick = () => {
+                feedPaused = !feedPaused;
+                E('btnFeedPause').classList.toggle('on', feedPaused);
+                E('btnFeedPause').setAttribute('aria-pressed', String(feedPaused))
+            };
+            E('btnFeedClear').onclick = () => E('feed').replaceChildren();
+
+            /* ---------- data panel ---------- */
+            function envObj() {
+                const nav = navigator, conn = nav.connection || nav.webkitConnection; return {
+                    url: location.href, userAgent: nav.userAgent, platform: nav.platform || '—', language: nav.language,
+                    screen: screen.width + ' × ' + screen.height, viewport: innerWidth + ' × ' + innerHeight + ' (live)',
+                    pixelRatio: String(devicePixelRatio || 1), cpuCores: String(nav.hardwareConcurrency || '—'),
+                    deviceMemory: nav.deviceMemory ? nav.deviceMemory + ' GB' : '—',
+                    network: conn ? conn.effectiveType : '—', timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || '—'
+                }
+            }
+            function renderEnv() {
+                const rows = Object.entries(envObj());
+                E('envRows').innerHTML = rows.map(r => `<div><dt>${r[0]}</dt><dd></dd></div>`).join('');
+                $$('#envRows dd').forEach((d, i) => d.textContent = rows[i][1])
+            }
+            function getTrackingData() {
+                return {
+                    tracker: 'Northward Session Telemetry', version: '2.0', sessionId: S.sid,
+                    startedAt: new Date(S.startedAt).toISOString(), exportedAt: new Date().toISOString(),
+                    environment: envObj(),
+                    summary: {
+                        totalEvents: S.events.length, cursorSamples: S.mouse.length, clicks: S.clicks.length,
+                        deadClicks: S.clicks.filter(c => c.dead).length, rageClicks: S.clicks.filter(c => c.rage).length,
+                        keyEvents: S.keys, selections: S.selCount, copies: S.copyCount, formEvents: S.formEvs,
+                        maxScrollDepthPercent: S.maxDepth, cursorTravelPx: Math.round(S.dist),
+                        idleMs: Math.round(S.idleMs), firstInteractionMs: S.firstInput
+                    },
+                    funnel: S.funnel,
+                    dwellTop: Object.fromEntries(Object.entries(S.dwell).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([k, v]) => [k, Math.round(v)])),
+                    events: S.events, clicks: S.clicks, mousePath: S.mouse
+                }
+            }
+            function download(name, text, mime) {
+                const b = new Blob([text], { type: mime }), u = URL.createObjectURL(b);
+                const a = document.createElement('a'); a.href = u; a.download = name; a.click();
+                setTimeout(() => URL.revokeObjectURL(u), 800)
+            }
+            E('btnJson').onclick = () => {
+                const d = JSON.stringify(getTrackingData(), null, 2);
+                E('dataOut').value = d;
+                download('northward-session-' + S.sid + '.json', d, 'application/json');
+                toast('JSON exported — ' + (d.length / 1024).toFixed(0) + ' KB')
+            };
+            E('btnCsv').onclick = () => {
+                const q = v => { v = v == null ? '' : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v };
+                const lines = ['offset_ms,timestamp,type,page_x,page_y,client_x,client_y,detail'];
+                for (const e of S.events) lines.push([e.t, e.ts, e.type, e.x ?? '', e.y ?? '', e.cx ?? '', e.cy ?? '', q(feedDetail(e))].join(','));
+                for (const m of S.mouse) lines.push([m.t, '', 'cursor_sample', m.x, m.y, m.cx, m.cy, ''].join(','));
+                download('northward-session-' + S.sid + '.csv', lines.join('\n'), 'text/csv');
+                toast('CSV exported — ' + fmtInt(lines.length - 1) + ' rows')
+            };
+            E('btnCopyJson').onclick = async () => {
+                const d = JSON.stringify(getTrackingData(), null, 2);
+                try { await navigator.clipboard.writeText(d); toast('Session JSON copied to clipboard.') }
+                catch { E('dataOut').value = d; toast('Clipboard blocked — JSON shown in the preview instead.', 'warn') }
+            };
+            function textReport() {
+                const el = Date.now() - S.startedAt, idle = Math.min(S.idleMs, el), act = el - idle;
+                const comp = engComp(), total = Math.round(comp.reduce((a, c) => a + c[1], 0));
+                const dead = S.clicks.filter(c => c.dead).length, rg = S.clicks.filter(c => c.rage).length;
+                const dw = Object.entries(S.dwell).sort((a, b) => b[1] - a[1]).slice(0, 3)
+                    .map(([k, v]) => k + ' (' + (v / 1000).toFixed(1) + 's)').join('; ') || '—';
+                const f = v => v != null ? 'done' : '—';
+                return [
+                    'NORTHWARD SUPPLY CO. — SESSION TELEMETRY REPORT',
+                    'Session ' + S.sid + ' · started ' + new Date(S.startedAt).toISOString(),
+                    'Duration ' + fmtClock(el) + ' (active ' + fmtClock(act) + ', idle ' + fmtClock(idle) + ')',
+                    'Engagement index ' + total + '/100',
+                    'Clicks ' + S.clicks.length + ' (' + dead + ' dead, ' + rg + ' rage) · keys ' + S.keys + ' · selections ' + S.selCount + ' · copies ' + S.copyCount,
+                    'Scroll depth ' + S.maxDepth + '% · cursor travel ' + fmtInt(S.dist) + ' px (≈' + (S.dist * .0254 / 96).toFixed(1) + ' m)',
+                    'Funnel — landed: done / 50% depth: ' + f(S.funnel.depth50) + ' / control: ' + f(S.funnel.control) + ' / field: ' + f(S.funnel.field) + ' / submit: ' + f(S.funnel.submit),
+                    'Top dwell: ' + dw,
+                    'Events recorded: ' + S.events.length + ' (+ ' + S.mouse.length + ' cursor samples)'
+                ].join('\n')
+            }
+            E('btnReport').onclick = async () => {
+                const r = textReport();
+                try { await navigator.clipboard.writeText(r); toast('Text report copied to clipboard.') }
+                catch { E('dataOut').value = r; toast('Clipboard blocked — report shown in the preview.', 'warn') }
+            };
+
+            /* ---------- persistence ---------- */
+            const LS_KEY = 'nw.session.v2', LS_UI = 'nw.ui.v2';
+            function saveSession(silent) {
+                if (!S.events.length && !S.mouse.length) { if (!silent) toast('Nothing to save yet — interact with the page first.', 'warn'); return }
+                try {
+                    const mouse = S.mouse.length > 3000 ? S.mouse.filter((_, i) => i % 2 === 0) : S.mouse;
+                    localStorage.setItem(LS_KEY, JSON.stringify({
+                        savedAt: new Date().toISOString(),
+                        startedAt: S.startedAt, sid: S.sid, events: S.events.slice(-6000), clicks: S.clicks, mouse,
+                        counts: S.counts, dwell: S.dwell, dist: S.dist, maxDepth: S.maxDepth, keys: S.keys, keyNames: S.keyNames,
+                        selCount: S.selCount, copyCount: S.copyCount, formEvs: S.formEvs, idleMs: S.idleMs,
+                        firstInput: S.firstInput, funnel: S.funnel
+                    }));
+                    E('saveInfo').textContent = 'Saved ' + new Date().toLocaleTimeString() + ' — ' + fmtInt(S.events.length) + ' events';
+                    updateSaveButtons();
+                    if (!silent) toast('Session saved to this browser.')
+                }
+                catch { toast('Could not save — browser storage quota exceeded.', 'warn') }
+            }
+            function loadSaved() { try { const r = localStorage.getItem(LS_KEY); return r ? JSON.parse(r) : null } catch { return null } }
+            function restoreSession(d) {
+                Object.assign(S, {
+                    startedAt: d.startedAt, sid: d.sid, events: d.events || [], clicks: d.clicks || [],
+                    mouse: d.mouse || [], counts: d.counts || {}, dwell: d.dwell || {}, dist: d.dist || 0, maxDepth: d.maxDepth || 0,
+                    keys: d.keys || 0, keyNames: d.keyNames || {}, selCount: d.selCount || 0, copyCount: d.copyCount || 0,
+                    formEvs: d.formEvs || 0, idleMs: d.idleMs || 0, firstInput: d.firstInput,
+                    funnel: Object.assign({ landed: 0, depth50: null, control: null, field: null, submit: null }, d.funnel)
+                });
+                S.lastInput = performance.now(); E('hdrSid').textContent = S.sid;
+                E('markers').replaceChildren(); S.clicks.slice(-250).forEach(addMarker);
+                rebuildFeed(); renderOverview(); drawPulse(); drawTimeline(); syncLayer(); updateSaveButtons();
+                toast('Session restored — ' + fmtInt(S.events.length) + ' events from ' + new Date(d.startedAt).toLocaleTimeString() + '.')
+            }
+            function updateSaveButtons() {
+                const has = !!localStorage.getItem(LS_KEY);
+                E('btnRestore').disabled = !has; E('btnDelSave').disabled = !has;
+                if (!has) E('saveInfo').textContent = 'No saved copy in this browser.'
+            }
+            E('btnSave').onclick = () => saveSession(false);
+            E('btnRestore').onclick = () => { const d = loadSaved(); if (d) restoreSession(d) };
+            E('btnDelSave').onclick = () => {
+                localStorage.removeItem(LS_KEY); updateSaveButtons();
+                toast('Saved copy deleted.')
+            };
+            function saveUI() {
+                try {
+                    localStorage.setItem(LS_UI, JSON.stringify({
+                        h: S.ui.h, collapsed: document.body.classList.contains('cmin'), tab: S.ui.tab
+                    }))
+                } catch { }
+            }
+
+            /* ---------- toasts ---------- */
+            function toast(msg, opts = {}) {
+                const t = document.createElement('div'); t.className = 'toast' + (opts.kind === 'warn' ? ' warn' : '');
+                const m = document.createElement('span'); m.className = 'tmsg'; m.textContent = msg; t.append(m);
+                let done = false; const dismiss = () => { if (done) return; done = true; t.classList.add('out'); setTimeout(() => t.remove(), 220) };
+                if (opts.actions) {
+                    const row = document.createElement('div'); row.className = 'tact';
+                    opts.actions.forEach(a => {
+                        const b = document.createElement('button'); b.type = 'button';
+                        b.textContent = a.label; b.onclick = a.fn; if (a.pri) b.className = 'pri'; row.append(b)
+                    });
+                    t.append(row)
+                }
+                else {
+                    const x = document.createElement('button'); x.type = 'button'; x.className = 'tx';
+                    x.setAttribute('aria-label', 'Dismiss'); x.innerHTML = ICON('i-x'); x.onclick = dismiss; t.append(x)
+                }
+                E('toasts').append(t);
+                if (!opts.sticky) setTimeout(dismiss, opts.ms || 3800);
+                return dismiss
+            }
+
+            /* ---------- demo site behaviour ---------- */
+            const NOTES = ['Shell over base. Vent early, vent often — sweat is the enemy.',
+                'Base plus light mid. Watch the cuffs and the collar.',
+                'Base, mid, shell. Hood up above the treeline.',
+                'Add insulated trousers. Exposed metal bites through gloves.',
+                'Full stack. Exposed skin is a rounding error.',
+                'Expedition weight. Tell someone where you are going.'];
+            function calc() {
+                const t = +E('calcTemp').value;
+                const act = +($('.c-acts button.on').dataset.a);
+                const layers = clamp(1 + Math.round((5 - t) / 8) - act, 1, 6);
+                E('calcTempVal').textContent = (t > 0 ? '+' : '') + t + '°C';
+                E('calcActVal').textContent = ['STILL WATCH', 'ON THE MOVE', 'HIGH OUTPUT'][act];
+                E('calcOut').textContent = layers;
+                E('calcStack').replaceChildren(...Array.from({ length: 6 }, (_, i) => {
+                    const s = document.createElement('i'); if (i < layers) s.className = 'f'; if (i === layers - 1) s.classList.add('top'); return s
+                }));
+                E('calcNote').textContent = NOTES[layers - 1]
+            }
+            E('calcTemp').addEventListener('input', calc);
+            $$('.c-acts button').forEach(b => b.addEventListener('click', () => {
+                $$('.c-acts button').forEach(x => x.classList.toggle('on', x === b)); calc()
+            }));
+            calc();
+            $$('.det').forEach(b => b.addEventListener('click', () => {
+                const open = b.closest('.item').classList.toggle('open');
+                b.querySelector('span').textContent = open ? '−' : '+';
+                b.setAttribute('aria-expanded', String(open))
+            }));
+            let manifest = 0;
+            $$('.addMan').forEach(b => b.addEventListener('click', () => {
+                manifest++;
+                toast(b.dataset.name + ' added — manifest holds ' + manifest + ' item' + (manifest > 1 ? 's' : '') + '.')
+            }));
+            E('btnCopyEntry').addEventListener('click', async () => {
+                const txt = $$('#journalEntry p').map(p => p.textContent.trim()).join('\n\n');
+                try {
+                    await navigator.clipboard.writeText(txt);
+                    if (S.active && !S.suspend) { S.copyCount++; record('copy', { chars: txt.length }) }
+                    toast('Field note copied — ' + fmtInt(txt.length) + ' characters.')
+                }
+                catch { toast('Clipboard blocked by the browser.', 'warn') }
+            });
+            E('dispatchForm').addEventListener('submit', e => {
+                e.preventDefault();
+                const em = E('dispEmail');
+                const ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em.value.trim());
+                if (!ok) {
+                    E('formErr').textContent = 'Enter a valid address — the dispatch rides on it.';
+                    em.setAttribute('aria-invalid', 'true'); em.focus();
+                    record('form_submit', { valid: false }); return
+                }
+                E('formErr').textContent = ''; em.removeAttribute('aria-invalid');
+                E('dispatchForm').hidden = true; E('formDone').hidden = false;
+                S.funnel.submit = Date.now() - S.startedAt;
+                record('form_submit', { valid: true });
+                toast('Dispatch confirmed — first letter arrives with the next cold front.')
+            });
+
+            /* ---------- init ---------- */
+            newSid();
+            buildChips();
+            selectTab('overview');
+            document.body.classList.add('mk-on');
+            try {
+                const u = JSON.parse(localStorage.getItem(LS_UI));
+                if (u) {
+                    if (u.h) { document.documentElement.style.setProperty('--ch', u.h + 'px'); S.ui.h = u.h }
+                    if (u.collapsed) document.body.classList.add('cmin');
+                    if (u.tab) selectTab(u.tab)
+                }
+            } catch { }
+            new ResizeObserver(() => { clearTimeout(S._ro); S._ro = setTimeout(syncLayer, 120) }).observe(document.body);
+            window.addEventListener('load', syncLayer);
+            syncLayer(); renderEnv(); updateSaveButtons();
+            record('session', { message: 'session ' + S.sid + ' started — ' + location.href }, { force: true });
+            renderOverview(); drawPulse(); updateRec(); setPlayIcon();
+            setInterval(() => {
+                pulseAdvance();
+                if (!document.hidden) {
+                    updateHeader();
+                    if (S.ui.tab === 'overview') { renderOverview(); drawPulse() }
+                    if (S.ui.tab === 'heatmap' && S.ui.heat === 'trail' && S._ml !== S.mouse.length) { S._ml = S.mouse.length; renderOverlay() }
+                }
+            }, 500);
+            setInterval(() => { if (S.active && !S.suspend && S.events.length) saveSession(true) }, 20000);
+            window.addEventListener('pagehide', () => { if (S.events.length) saveSession(true) });
+            const saved = loadSaved();
+            if (saved && saved.events && saved.events.length) {
+                const dismiss = toast('Previous session found — ' + fmtInt(saved.events.length) + ' events, saved ' + new Date(saved.savedAt).toLocaleTimeString() + '.',
+                    {
+                        sticky: true, actions: [
+                            { label: 'RESTORE', pri: true, fn: () => { restoreSession(saved); dismiss() } },
+                            { label: 'DISCARD', fn: () => { localStorage.removeItem(LS_KEY); updateSaveButtons(); dismiss() } }]
+                    })
+            }
+        })();
+    </script>
+</body>
+
+</html>
